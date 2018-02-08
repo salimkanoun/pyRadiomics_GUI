@@ -206,7 +206,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				//Set current directory if already define one
 				if (imageFile !=null) fileChooser.setSelectedFile(imageFile);
-				if (maskFile !=null)fileChooser.setSelectedFile(maskFile);
 				int ouvrir=fileChooser.showOpenDialog(null);
 				if(ouvrir==JFileChooser.APPROVE_OPTION) {
 				imageFile=fileChooser.getSelectedFile();
@@ -220,7 +219,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser=new JFileChooser();
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				if (imageFile !=null) fileChooser.setSelectedFile(imageFile);
 				if (maskFile !=null)fileChooser.setSelectedFile(maskFile);
 				int ouvrir=fileChooser.showOpenDialog(null);
 				if(ouvrir==JFileChooser.APPROVE_OPTION) {
