@@ -26,6 +26,8 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,9 @@ import org.json.simple.JSONObject;
 
 import ij.IJ;
 import ij.Macro;
+import ij.WindowManager;
 import ij.plugin.PlugIn;
+import sc.fiji.io.Nrrd_Writer;
 
 import java.awt.Color;
 import javax.swing.JTextField;
@@ -48,8 +52,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 
 	private File imageFile;
 	private File maskFile;
-	private JLabel imagePathLabel ;
-	private JLabel maskPathLabel;
 	private JLabel lblStatusIdle; 
 	private JTextField roiNumberString;
 	private List<Integer> label;
@@ -101,6 +103,10 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	
 	OptionsRadiomics option;
 	
+	//Main Frame buttons
+	JButton btnImagejStack, btnSetImage, btnSetMask, btnImagejMaskStack ;
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -109,6 +115,9 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			public void run() {
 				try {
 					Radiomics_Frame frame = new Radiomics_Frame();
+					//Disable ImageJ button for Stack reading in case of standalone run
+					frame.btnImagejStack.setVisible(false);
+					frame.btnImagejMaskStack.setVisible(false);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -184,9 +193,12 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(Color.BLACK));
 		contentPane.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(0, 2, 0, 0));
+		panel.setLayout(new GridLayout(0, 3, 0, 0));
 		
-		JButton btnSetImage = new JButton("Set Image");
+		JLabel lblImage = new JLabel("Image");
+		panel.add(lblImage);
+		
+		btnSetImage = new JButton("Image File");
 		panel.add(btnSetImage);
 		btnSetImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -198,12 +210,12 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				int ouvrir=fileChooser.showOpenDialog(null);
 				if(ouvrir==JFileChooser.APPROVE_OPTION) {
 				imageFile=fileChooser.getSelectedFile();
-				imagePathLabel.setText(fileChooser.getSelectedFile().getName());
+				disableImageButton(true);
 				}
 			}
 		});
 		
-		JButton btnSetMask = new JButton("Set Mask");
+		btnSetMask = new JButton("Mask File");
 		btnSetMask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser=new JFileChooser();
@@ -213,27 +225,62 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				int ouvrir=fileChooser.showOpenDialog(null);
 				if(ouvrir==JFileChooser.APPROVE_OPTION) {
 				maskFile=fileChooser.getSelectedFile();
-				maskPathLabel.setText(fileChooser.getSelectedFile().getName());
+				disableMaskButton(true);
 				}
 			}
 		});
 		
-		imagePathLabel = new JLabel("N/A");
-		panel.add(imagePathLabel);
+		btnImagejStack = new JButton("ImageJ Image Stack");
+		btnImagejStack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Export stack in NRRD in temporary file and store it's file location
+				Nrrd_Writer writer = new Nrrd_Writer();
+				try {
+					Path folder = Files.createTempDirectory("pyRadiomics_");
+					File image=new File(folder.toAbsolutePath()+File.separator+"image.nrrd");
+					writer.save(WindowManager.getCurrentImage(), image.getAbsolutePath().toString());
+					image.deleteOnExit();
+					folder.toFile().deleteOnExit();
+					imageFile=image;
+					disableImageButton(false);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		panel.add(btnImagejStack);
+		
+		JLabel lblMask = new JLabel("Mask");
+		panel.add(lblMask);
 		panel.add(btnSetMask);
 		
-		maskPathLabel = new JLabel("N/A");
-		panel.add(maskPathLabel);
-		
-		JPanel panel_2 = new JPanel();
-		panel.add(panel_2);
+		btnImagejMaskStack = new JButton("ImageJ Mask Stack");
+		btnImagejMaskStack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Export stack in NRRD in temporary file and store it's file location
+				Nrrd_Writer writer = new Nrrd_Writer();
+				try {
+					Path folder = Files.createTempDirectory("pyRadiomics_");
+					File mask=new File(folder.toAbsolutePath()+File.separator+"image.nrrd");
+					writer.save(WindowManager.getCurrentImage(), mask.getAbsolutePath().toString());
+					maskFile=mask;
+					mask.deleteOnExit();
+					folder.toFile().deleteOnExit();
+					disableMaskButton(false);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		panel.add(btnImagejMaskStack);
 		
 		JLabel lblRoiNumber = new JLabel("Roi number");
-		panel_2.add(lblRoiNumber);
+		panel.add(lblRoiNumber);
 		
 		roiNumberString = new JTextField("1");
+		panel.add(roiNumberString);
 		roiNumberString.setToolTipText("ex: 1;5;10-15");
-		panel_2.add(roiNumberString);
 		roiNumberString.setColumns(3);
 		
 		JPanel Title_Panel = new JPanel();
@@ -513,21 +560,51 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		saveSettingsInRegistery();
 		
 	}
+	
+	private void disableImageButton(boolean file){
+		// if set by file disable the ImageJ button
+		if (file){
+			btnImagejStack.setEnabled(false);
+			btnSetImage.setBackground(Color.GREEN);
+			btnSetImage.setOpaque(true);
+			
+		}
+		else{
+			btnImagejStack.setBackground(Color.GREEN);
+			btnImagejStack.setOpaque(true);
+			btnSetImage.setEnabled(false);
+		}
+	}
+	
+	private void disableMaskButton(boolean file){
+		if (file){
+			btnImagejMaskStack.setEnabled(false);
+			btnSetMask.setBackground(Color.GREEN);
+			btnSetMask.setOpaque(true);
+			
+		}
+		else{
+			btnImagejMaskStack.setBackground(Color.GREEN);
+			btnImagejMaskStack.setOpaque(true);
+			btnSetMask.setEnabled(false);
+		}
+		
+	}
 
 	//ImageJ run Methode
 	@Override
 	public void run(String arg0) {
 		String argumentString = Macro.getOptions();
-		if (argumentString!=null && argumentString.endsWith(" ")) argumentString=argumentString.substring(0,argumentString.length()-1);
 		Radiomics_Frame frame = new Radiomics_Frame();
 		frame.setVisible(true);
 		//If argument parse them to load mask and image file
 		if (argumentString!=null) {
+			argumentString=argumentString.trim();
 			int separator=argumentString.indexOf(";");
 			frame.imageFile= new File(argumentString.substring(0, separator));
-			frame.imagePathLabel.setText(argumentString.substring(0, separator));
 			frame.maskFile= new File(argumentString.substring(separator+1));
-			frame.maskPathLabel.setText(argumentString.substring(separator+1));
+			frame.disableImageButton(true);
+			frame.disableMaskButton(true);
 			IJ.log(argumentString+"_"+frame.imageFile.getAbsolutePath().toString()+"=="+frame.maskFile.getAbsolutePath().toString()+"fin");
 		}
 		//Example of running Macro
