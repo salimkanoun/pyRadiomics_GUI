@@ -788,7 +788,7 @@ public class OptionsRadiomics extends JDialog {
 			{
 			this.pack();
 			try {
-				this.setIconImage(ImageIO.read(getClass().getResource("/logo/logo.png")));
+				this.setIconImage(ImageIO.read(getClass().getResource("/logo/logo_pyRadiomics.png")));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
