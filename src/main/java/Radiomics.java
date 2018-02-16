@@ -26,9 +26,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 public class Radiomics {
@@ -224,7 +223,7 @@ public class Radiomics {
 	 * @return
 	 * @throws IOException
 	 */
-	public JSONObject sendPyRadiomics(String image, String mask, File settingsYaml) throws IOException {
+	public JsonObject sendPyRadiomics(String image, String mask, File settingsYaml) throws IOException {
 		String json;
 		
 		ProcessBuilder pb = new ProcessBuilder("pyradiomics", image , mask ,"--format", "json", "--param", settingsYaml.getAbsolutePath().toString());
@@ -238,7 +237,7 @@ public class Radiomics {
 
 		 StringBuilder builder = new StringBuilder();
 		 String line = null;
-		 JSONObject resultsJson=null;
+		 JsonObject resultsJson=null;
 		 while ( (line = reader.readLine()) != null) {
 			 	//If JSON Object parse it
 			 	if (line.startsWith("{")){
@@ -299,12 +298,13 @@ public class Radiomics {
 	 * @param json
 	 * @return
 	 */
-	private JSONObject readJson(String json) {
-		JSONObject resultsJson=null; 
-		try {
-				JSONParser parser = new JSONParser();
-				resultsJson= (JSONObject) parser.parse(json);
-			 } catch (ParseException e) {e.printStackTrace();}
+	private JsonObject readJson(String json) {
+		JsonObject resultsJson=null; 
+		
+		JsonParser parser = new JsonParser();
+				
+		resultsJson= parser.parse(json).getAsJsonObject();
+		
 		 return resultsJson;
 	}
 
@@ -326,12 +326,12 @@ public class Radiomics {
 	 * @param resultsJson
 	 * @param roiNumber
 	 */
-	public void jsonToCsv(StringBuilder csv, JSONObject resultsJson, int roiNumber) {
+	public void jsonToCsv(StringBuilder csv, JsonObject resultsJson, int roiNumber) {
 		//On ajoute le numero de la ROI
 		csv.append(roiNumber+",");
 		//On ecrit les resultats
 		for (int i=0; i<labels.size(); i++) {
-			if (resultsJson.containsKey(labels.get(i))){
+			if (resultsJson.has(labels.get(i))){
 				String value=resultsJson.get(labels.get(i)).toString();
 				//replace comma by semicolon to avoid breaking CSV structure
 				value=value.replaceAll(",", "|");
@@ -438,8 +438,8 @@ public class Radiomics {
 			+ "imageType:\n";
 	//LOG ET WAVELET A TESTER
 	if (imageType.get("typeOriginal")) settingsYaml += "  Original: {}"+"\n";
-	if (imageType.get("typeLoG")) settingsYaml += "  LoG: {'sigma' : ["+sigma+"]}/n";
-	if (imageType.get("typeWavelet")) settingsYaml += "  Wavelet: {'start_level' : ["+String.valueOf(startLevelWavelet)+"] 'level' : ["+String.valueOf(levelWavelet)+"] 'wavelet' : ["+stringWavelet+"] }"+"\n";
+	if (imageType.get("typeLoG")) settingsYaml += "  LoG: {'sigma' : ["+sigma+"]}" + "\n";
+	if (imageType.get("typeWavelet")) settingsYaml += "  Wavelet: {'start_level' : ["+String.valueOf(startLevelWavelet)+"], 'level' : ["+String.valueOf(levelWavelet)+"], 'wavelet' : [\""+stringWavelet+"\"] }"+"\n";
 	if (imageType.get("typeSquare")) settingsYaml += "  Square: {}"+"\n";
 	if (imageType.get("typeSquareRoot")) settingsYaml += "  SquareRoot: {}"+"\n";
 	if (imageType.get("typeLogarithm")) settingsYaml += "  Logarithm: {}"+"\n";

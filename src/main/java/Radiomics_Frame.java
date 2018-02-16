@@ -37,7 +37,8 @@ import java.awt.GridLayout;
 import javax.swing.border.LineBorder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
+
+import com.google.gson.JsonObject;
 
 import ij.IJ;
 import ij.Macro;
@@ -339,7 +340,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			radiomics.addColumnheader(csv);
 			parseRoiNumberString();
 			File settings=null;
-			JSONObject json=null;
+			JsonObject json=null;
 			if (label.size()!=0){
 					for (int i=0; i<label.size();i++){
 						//Display info
@@ -348,9 +349,9 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 						if (resegmentPerRoi && fileSettingsOption==null && optionSet && imageFile!=null &&maskFile!=null){
 							System.out.println(fixedBinPerRoi);
 							settings=radiomics.writeYaml(label.get(i), resegmentLimit, min, max);
-							JSONObject jsonTemp=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
-							double minRoi=(double)jsonTemp.get("original_firstorder_Minimum");
-							double maxRoi=(double)jsonTemp.get("original_firstorder_Maximum");
+							JsonObject jsonTemp=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
+							double minRoi=jsonTemp.get("original_firstorder_Minimum").getAsDouble();
+							double maxRoi=jsonTemp.get("original_firstorder_Maximum").getAsDouble();
 							settings=radiomics.writeYaml(discretize, ((maxRoi-minRoi)/fixedBinPerRoi),validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour,  true, minRoi, maxRoi, preCroping, logSigma, waveletStart, waveletLevel, waveletString, voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
