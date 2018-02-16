@@ -293,7 +293,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 		this.setLocationRelativeTo(null);
 		try {
-			this.setIconImage(ImageIO.read(getClass().getResource("/logo/logo_pyRadiomics.png")));
+			this.setIconImage(ImageIO.read(getClass().getResource("logo/logo_pyRadiomics.png")));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

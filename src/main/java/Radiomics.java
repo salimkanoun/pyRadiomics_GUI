@@ -439,7 +439,7 @@ public class Radiomics {
 	//LOG ET WAVELET A TESTER
 	if (imageType.get("typeOriginal")) settingsYaml += "  Original: {}"+"\n";
 	if (imageType.get("typeLoG")) settingsYaml += "  LoG: {'sigma' : ["+sigma+"]}" + "\n";
-	if (imageType.get("typeWavelet")) settingsYaml += "  Wavelet: {'start_level' : ["+String.valueOf(startLevelWavelet)+"], 'level' : ["+String.valueOf(levelWavelet)+"], 'wavelet' : [\""+stringWavelet+"\"] }"+"\n";
+	if (imageType.get("typeWavelet")) settingsYaml += "  Wavelet: {'start_level' : "+String.valueOf(startLevelWavelet)+", 'level' : "+String.valueOf(levelWavelet)+", 'wavelet' : \""+stringWavelet+"\" }"+"\n";
 	if (imageType.get("typeSquare")) settingsYaml += "  Square: {}"+"\n";
 	if (imageType.get("typeSquareRoot")) settingsYaml += "  SquareRoot: {}"+"\n";
 	if (imageType.get("typeLogarithm")) settingsYaml += "  Logarithm: {}"+"\n";
