@@ -293,7 +293,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 		this.setLocationRelativeTo(null);
 		try {
-			this.setIconImage(ImageIO.read(getClass().getResource("logo/logo_pyRadiomics.png")));
+			this.setIconImage(ImageIO.read(getClass().getResource("/logo/logo_pyRadiomics.png")));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -336,8 +336,8 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			//Choisi destination du CSV
 			StringBuilder csv=new StringBuilder();
 			//building Radiomics object with awaiting results
-			Radiomics radiomics=new Radiomics(imageType);
-			radiomics.addColumnheader(csv);
+			Radiomics radiomics=new Radiomics(/*imageType*/);
+			//radiomics.addColumnheader(csv);
 			parseRoiNumberString();
 			File settings=null;
 			JsonObject json=null;
@@ -373,7 +373,9 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 							JOptionPane.showMessageDialog(null,"Missing Image or Mask File");
 						}
 					//build CSV
+					System.out.println("ici");
 					if (json.size()!=0) radiomics.jsonToCsv(csv, json, label.get(i));
+					
 					}
 				//Select CSV destination
 				JFileChooser fileChooser=new JFileChooser();

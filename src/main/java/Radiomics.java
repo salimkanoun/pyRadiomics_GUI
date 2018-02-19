@@ -20,9 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -31,187 +30,11 @@ import com.google.gson.JsonParser;
 
 
 public class Radiomics {
-	List<String> labels=new ArrayList<String>();
 
 	/**
 	 * constructor with awaiting labels
 	 */
-	public Radiomics(HashMap<String, Boolean> imageType) {
-		populateLabel(imageType);
-	}
-	
-	private void populateLabel(HashMap<String, Boolean> imageType) {
-		
-		String[] radiomicsResults={
-				"original_firstorder_10Percentile",
-				"original_firstorder_90Percentile",
-				"original_firstorder_Energy",
-				"original_firstorder_Entropy",
-				"original_firstorder_InterquartileRange",
-				"original_firstorder_Kurtosis",
-				"original_firstorder_Maximum",
-				"original_firstorder_Mean",
-				"original_firstorder_MeanAbsoluteDeviation",
-				"original_firstorder_Median",
-				"original_firstorder_Minimum",
-				"original_firstorder_Range",
-				"original_firstorder_RobustMeanAbsoluteDeviation",
-				"original_firstorder_RootMeanSquared",
-				"original_firstorder_Skewness",
-				"original_firstorder_StandardDeviation",
-				"original_firstorder_TotalEnergy",
-				"original_firstorder_Uniformity",
-				"original_firstorder_Variance",
-				"original_glcm_Autocorrelation",
-				"original_glcm_ClusterProminence",
-				"original_glcm_ClusterShade",
-				"original_glcm_ClusterTendency",
-				"original_glcm_Contrast",
-				"original_glcm_Correlation",
-				"original_glcm_DifferenceAverage",
-				"original_glcm_DifferenceEntropy",
-				"original_glcm_DifferenceVariance",
-				"original_glcm_Dissimilarity",
-				"original_glcm_Homogeneity1",
-				"original_glcm_Homogeneity2",
-				"original_glcm_Id",
-				"original_glcm_Idm",
-				"original_glcm_Idmn",
-				"original_glcm_Idn",
-				"original_glcm_Imc1",
-				"original_glcm_Imc2",
-				"original_glcm_InverseVariance",
-				"original_glcm_JointAverage",
-				"original_glcm_JointEnergy",
-				"original_glcm_JointEntropy",
-				"original_glcm_MaximumProbability",
-				"original_glcm_SumAverage",
-				"original_glcm_SumEntropy",
-				"original_glcm_SumSquares",
-				"original_gldm_DependenceEntropy",
-				"original_gldm_DependenceNonUniformity",
-				"original_gldm_DependenceNonUniformityNormalized",
-				"original_gldm_DependenceVariance",
-				"original_gldm_GrayLevelNonUniformity",
-				"original_gldm_GrayLevelNonUniformityNormalized",
-				"original_gldm_GrayLevelVariance",
-				"original_gldm_HighGrayLevelEmphasis",
-				"original_gldm_LargeDependenceEmphasis",
-				"original_gldm_LargeDependenceHighGrayLevelEmphasis",
-				"original_gldm_LargeDependenceLowGrayLevelEmphasis",
-				"original_gldm_LowGrayLevelEmphasis",
-				"original_gldm_SmallDependenceEmphasis",
-				"original_gldm_SmallDependenceHighGrayLevelEmphasis",
-				"original_gldm_SmallDependenceLowGrayLevelEmphasis",
-				"original_glrlm_GrayLevelNonUniformity",
-				"original_glrlm_GrayLevelNonUniformityNormalized",
-				"original_glrlm_GrayLevelVariance",
-				"original_glrlm_HighGrayLevelRunEmphasis",
-				"original_glrlm_LongRunEmphasis",
-				"original_glrlm_LongRunHighGrayLevelEmphasis",
-				"original_glrlm_LongRunLowGrayLevelEmphasis",
-				"original_glrlm_LowGrayLevelRunEmphasis",
-				"original_glrlm_RunEntropy",
-				"original_glrlm_RunLengthNonUniformity",
-				"original_glrlm_RunLengthNonUniformityNormalized",
-				"original_glrlm_RunPercentage",
-				"original_glrlm_RunVariance",
-				"original_glrlm_ShortRunEmphasis",
-				"original_glrlm_ShortRunHighGrayLevelEmphasis",
-				"original_glrlm_ShortRunLowGrayLevelEmphasis",
-				"original_glszm_GrayLevelNonUniformity",
-				"original_glszm_GrayLevelNonUniformityNormalized",
-				"original_glszm_GrayLevelVariance",
-				"original_glszm_HighGrayLevelZoneEmphasis",
-				"original_glszm_LargeAreaEmphasis",
-				"original_glszm_LargeAreaHighGrayLevelEmphasis",
-				"original_glszm_LargeAreaLowGrayLevelEmphasis",
-				"original_glszm_LowGrayLevelZoneEmphasis",
-				"original_glszm_SizeZoneNonUniformity",
-				"original_glszm_SizeZoneNonUniformityNormalized",
-				"original_glszm_SmallAreaEmphasis",
-				"original_glszm_SmallAreaHighGrayLevelEmphasis",
-				"original_glszm_SmallAreaLowGrayLevelEmphasis",
-				"original_glszm_ZoneEntropy",
-				"original_glszm_ZonePercentage",
-				"original_glszm_ZoneVariance",
-				"original_ngtdm_Busyness",
-				"original_ngtdm_Coarseness",
-				"original_ngtdm_Complexity",
-				"original_ngtdm_Contrast",
-				"original_ngtdm_Strength"};
-		
-		String[] radiomicsShapeResults=	{"original_shape_Compactness1",
-				"original_shape_Compactness2",
-				"original_shape_Elongation",
-				"original_shape_Flatness",
-				"original_shape_LeastAxis",
-				"original_shape_MajorAxis",
-				"original_shape_Maximum2DDiameterColumn",
-				"original_shape_Maximum2DDiameterRow",
-				"original_shape_Maximum2DDiameterSlice",
-				"original_shape_Maximum3DDiameter",
-				"original_shape_MinorAxis",
-				"original_shape_SphericalDisproportion",
-				"original_shape_Sphericity",
-				"original_shape_SurfaceArea",
-				"original_shape_SurfaceVolumeRatio",
-				"original_shape_Volume"};
-		
-		String[] radiomicsGeneralResults=	{"general_info_MaskHash",
-				"general_info_GeneralSettings",
-				"general_info_VoxelNum",
-				"general_info_Version",
-				"general_info_ImageSpacing",
-				"general_info_BoundingBox",
-				"general_info_ImageHash",
-				"general_info_VolumeNum",
-				"general_info_EnabledImageTypes"};
-				
-		
-		List<String> labelsOriginal=new ArrayList<String>();
-		List<String> labelsWavelet=new ArrayList<String>();
-		List<String> labelsSquareRoot=new ArrayList<String>();
-		List<String> labelsExponential=new ArrayList<String>();
-		List<String> labelsLoG=new ArrayList<String>();
-		List<String> labelsSquare=new ArrayList<String>();
-		List<String> labelsLogarithm=new ArrayList<String>();
-		
-		for (int i=0; i<radiomicsResults.length; i++) {
-			String original=radiomicsResults[i];
-			String newlabelWavelet = radiomicsResults[i].replace("original", "wavelet");
-			String newlabelSquareRoot = radiomicsResults[i].replace("original", "squareroot");
-			String newlabelExponential = radiomicsResults[i].replace("original", "exponential");
-			String newlabelLoG = radiomicsResults[i].replace("original", "log");
-			String newlabelSquare = radiomicsResults[i].replace("original", "square");
-			String newlabelLogarithm = radiomicsResults[i].replace("original", "logarithm");
-			
-			labelsOriginal.add(original);
-			labelsWavelet.add(newlabelWavelet);
-			labelsSquareRoot.add(newlabelSquareRoot);
-			labelsExponential.add(newlabelExponential);
-			labelsLoG.add(newlabelLoG);
-			labelsSquare.add(newlabelSquare);
-			labelsLogarithm.add(newlabelLogarithm);
-		}
-		
-		if (imageType.get("typeOriginal")) labels.addAll(labelsOriginal);;
-		if (imageType.get("typeLoG")) labels.addAll(labelsLoG);
-		if (imageType.get("typeWavelet")) labels.addAll(labelsWavelet);;
-		if (imageType.get("typeSquare")) labels.addAll(labelsSquare);
-		if (imageType.get("typeSquareRoot")) labels.addAll(labelsSquareRoot);
-		if (imageType.get("typeLogarithm")) labels.addAll(labelsLogarithm);
-		if (imageType.get("typeExponential")) labels.addAll(labelsExponential);
-		
-		//Add Shape non dependent of filtering
-		for (int i=0; i<radiomicsShapeResults.length; i++) {
-			labels.add(radiomicsShapeResults[i]);
-		}
-		for (int i=0; i<radiomicsGeneralResults.length; i++) {
-			labels.add(radiomicsGeneralResults[i]);
-		}
-		
-		
+	public Radiomics() {
 	}
 	
 	
@@ -312,11 +135,11 @@ public class Radiomics {
 	 * Add column Title to CSV that will be generated
 	 * @param csv
 	 */
-	protected void addColumnheader(StringBuilder csv){
+	private void addColumnheader(StringBuilder csv, String[] resultsTitle){
 		//Add Roi Column Title
 		csv.append("ROI number,");
-		for (int i=0; i<labels.size(); i++) {
-			csv.append(labels.get(i)+",");
+		for (int i=0; i<resultsTitle.length; i++) {
+			csv.append(resultsTitle[i]+",");
 		}
 		csv.append("\n");
 	}
@@ -327,12 +150,18 @@ public class Radiomics {
 	 * @param roiNumber
 	 */
 	public void jsonToCsv(StringBuilder csv, JsonObject resultsJson, int roiNumber) {
+		String[] resultsTitle=new String[resultsJson.size()];
+		resultsJson.keySet().toArray(resultsTitle);
+		Arrays.sort(resultsTitle);
+		addColumnheader(csv , resultsTitle);
 		//On ajoute le numero de la ROI
+		// SK EXCEL HAS LIMITATION OF NUMBER OF CHARACTER IN A CELL IF TOO MUCH RADIOMICS PARAMETER RESULTS SPLITED IN 2 LINES
+		//CONSIDER MOVING TO ANOTHER FILE FORMAT
 		csv.append(roiNumber+",");
 		//On ecrit les resultats
-		for (int i=0; i<labels.size(); i++) {
-			if (resultsJson.has(labels.get(i))){
-				String value=resultsJson.get(labels.get(i)).toString();
+		for (int i=0; i<resultsTitle.length; i++) {
+			if (resultsJson.has(resultsTitle[i])){
+				String value=resultsJson.get(resultsTitle[i]).toString();
 				//replace comma by semicolon to avoid breaking CSV structure
 				value=value.replaceAll(",", "|");
 				//Append comma to separate results in CSV
@@ -341,7 +170,9 @@ public class Radiomics {
 			else csv.append(",");
 			
 		}
+		
 		csv.append("\n");
+		System.out.println("fini");
 	}
 	
 	/**
