@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
 
 
 public class Radiomics {
-
+	String[] resultsTitle;
 	/**
 	 * constructor with awaiting labels
 	 */
@@ -149,16 +149,20 @@ public class Radiomics {
 	 * @param resultsJson
 	 * @param roiNumber
 	 */
-	public void jsonToCsv(StringBuilder csv, JsonObject resultsJson, int roiNumber) {
-		String[] resultsTitle=new String[resultsJson.size()];
-		resultsJson.keySet().toArray(resultsTitle);
-		Arrays.sort(resultsTitle);
-		addColumnheader(csv , resultsTitle);
-		//On ajoute le numero de la ROI
+	public void jsonToCsv(StringBuilder csv, JsonObject resultsJson, int roiNumber, boolean maketitle) {
+		
+		if (maketitle) {
+			resultsTitle=new String[resultsJson.size()];
+			resultsJson.keySet().toArray(resultsTitle);
+			Arrays.sort(resultsTitle);
+			addColumnheader(csv , resultsTitle);
+		}
 		// SK EXCEL HAS LIMITATION OF NUMBER OF CHARACTER IN A CELL IF TOO MUCH RADIOMICS PARAMETER RESULTS SPLITED IN 2 LINES
 		//CONSIDER MOVING TO ANOTHER FILE FORMAT
+		
+		//Add ROI number results
 		csv.append(roiNumber+",");
-		//On ecrit les resultats
+		//Write results one by one
 		for (int i=0; i<resultsTitle.length; i++) {
 			if (resultsJson.has(resultsTitle[i])){
 				String value=resultsJson.get(resultsTitle[i]).toString();
@@ -172,7 +176,6 @@ public class Radiomics {
 		}
 		
 		csv.append("\n");
-		System.out.println("fini");
 	}
 	
 	/**
