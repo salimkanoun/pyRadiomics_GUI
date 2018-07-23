@@ -14,15 +14,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -87,7 +84,7 @@ public class Radiomics {
 	 */
 	public static void testPyRadiomics()  {
 		
-		 ProcessBuilder pb = new ProcessBuilder("pyradiomics", "-version");
+		 ProcessBuilder pb = new ProcessBuilder("pyradiomics", "--version");
 		 pb.environment();
 	        
 		//ProcessBuilder pb = new ProcessBuilder("cmd.exe", "pyradiomics" ,"--version");
@@ -349,30 +346,6 @@ public class Radiomics {
 			pw.close();
 		}
 		return temp;
-	}
-	
-	/**
-	 * To read a YAML File, not needed anymore
-	 * @param settingsFileYaml
-	 * @return
-	 */
-	@Deprecated
-	protected String getYamlSettings(File settingsFileYaml) {
-		StringBuilder sb = new StringBuilder();
-		
-		try(BufferedReader br = new BufferedReader(new FileReader(settingsFileYaml))) {
-		    String line = br.readLine();
-		    while (line != null) {
-		        sb.append(line);
-		        sb.append(System.lineSeparator());
-		        line = br.readLine();
-		    }
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return sb.toString();
 	}
 
 }

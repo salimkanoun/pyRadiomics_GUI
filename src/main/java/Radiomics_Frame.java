@@ -458,6 +458,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	}
 	
 	private void loadSettingsFromRegistery() {
+		
 		optionSet=jPrefer.getBoolean("optionSet", false);
 		if (optionSet) {
 			discretize=jPrefer.getBoolean("discretize", false);
