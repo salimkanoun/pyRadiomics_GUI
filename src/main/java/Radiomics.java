@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -85,7 +86,13 @@ public class Radiomics {
 	 * Test if pyRadiomics is reachable in the OS.
 	 */
 	public static void testPyRadiomics()  {
-		ProcessBuilder pb = new ProcessBuilder("pyradiomics" ,"--version");
+		
+		 ProcessBuilder pb = new ProcessBuilder("pyradiomics", "-version");
+		 pb.environment();
+	        
+		//ProcessBuilder pb = new ProcessBuilder("cmd.exe", "pyradiomics" ,"--version");
+		
+		
 		pb.redirectErrorStream(true); 
 		BufferedReader reader = null;
         Process process;
@@ -257,8 +264,8 @@ public class Radiomics {
 	}
 	
 	if (resegment) settingsYaml +="  resegmentRange: "+resegmentRange+"\n";
-	//A TESTER LE PRECROP QUE POUR FILTRE
-	if (imageType.get("typeLoG")|| imageType.get("typeWavelet")||imageType.get("typeSquare")||imageType.get("typeSquareRoot")||imageType.get("typeLogarithm")||imageType.get("typeExponential") )settingsYaml +="  #preCrop: "+String.valueOf(preCrop)+"\n";
+	
+	if (imageType.get("typeLoG")|| imageType.get("typeWavelet")||imageType.get("typeSquare")||imageType.get("typeSquareRoot")||imageType.get("typeLogarithm")||imageType.get("typeExponential") )settingsYaml +="  preCrop: "+String.valueOf(preCrop)+"\n";
 			
 	if (voxelArrayShift!=0) settingsYaml +="  voxelArrayShift: "+voxelArrayShift+"\n";
 	
