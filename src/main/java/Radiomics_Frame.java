@@ -65,7 +65,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	//Discretization
 	private boolean discretize;
 	private boolean fixedbin;
-	private boolean resegmentPerRoi;
+	private boolean useFixedBinPerRoi;
 	private Double binWidth;
 	private boolean resegmentLimit;
 	private double min;
@@ -179,12 +179,12 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				option=new OptionsRadiomics();
 				option.setLocationRelativeTo(null);
 				if (optionSet){
-					option.setExistingSettings(optionSet, fixedbin, resegmentPerRoi, binWidth, resegmentLimit, min, max, fixedBinPerRoi, normalize, normalizeScale, removeOutliners, resample, pixelSpacing, interpolator, padDistance, validateMask, minRoiDimension, minRoiSize, geometryTolerance, correctMask, isForce2DExtraction, isDistance, Dimension2D, matrixWeighting, distanceNeighbour, preCroping, voxelArrayShift, symetricalGLCM, alfa, logSigma, waveletString, waveletStart, waveletLevel, useGradientSpacing, imageType);
+					option.setExistingSettings(optionSet, fixedbin, useFixedBinPerRoi, binWidth, resegmentLimit, min, max, fixedBinPerRoi, normalize, normalizeScale, removeOutliners, resample, pixelSpacing, interpolator, padDistance, validateMask, minRoiDimension, minRoiSize, geometryTolerance, correctMask, isForce2DExtraction, isDistance, Dimension2D, matrixWeighting, distanceNeighbour, preCroping, voxelArrayShift, symetricalGLCM, alfa, logSigma, waveletString, waveletStart, waveletLevel, useGradientSpacing, imageType);
 					option.setSelectedFeatures(featureSelection);
 				}
 				option.setModal(true);
 				option.setVisible(true);
-				if (option.getOk()) {
+				if (option.ok) {
 					getOptions();
 				}
 				
@@ -348,7 +348,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 						//Display info
 						lblStatusIdle.setText("Calculating ROI "+(i+1)+"/"+label.size());
 						//If fixed bin per ROI need to get min and max of each ROI
-						if (resegmentPerRoi && fileSettingsOption==null && optionSet && imageFile!=null &&maskFile!=null){
+						if (useFixedBinPerRoi && fileSettingsOption==null && optionSet && imageFile!=null &&maskFile!=null){
 							System.out.println(fixedBinPerRoi);
 							settings=radiomics.writeYaml(label.get(i), resegmentLimit, min, max);
 							JsonObject jsonTemp=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
@@ -358,7 +358,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
 						//Generate file settings if not defined in options
-						else if (!resegmentPerRoi && fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
+						else if (!useFixedBinPerRoi && fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
 							settings=radiomics.writeYaml(discretize,binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
@@ -405,7 +405,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		//Add settings
 		jPrefer.putBoolean("discretize", discretize);
 		jPrefer.putBoolean("fixedbin", fixedbin);
-		jPrefer.putBoolean("resegmentPerRoi", resegmentPerRoi);
+		jPrefer.putBoolean("resegmentPerRoi", useFixedBinPerRoi);
 		jPrefer.putDouble("binWidth", binWidth);
 		jPrefer.putBoolean("resegmentLimit", resegmentLimit);
 		jPrefer.putDouble("min", min);
@@ -463,7 +463,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		if (optionSet) {
 			discretize=jPrefer.getBoolean("discretize", false);
 			fixedbin=jPrefer.getBoolean("fixedbin", false);
-			resegmentPerRoi=jPrefer.getBoolean("resegmentPerRoi", false);
+			useFixedBinPerRoi=jPrefer.getBoolean("resegmentPerRoi", false);
 			binWidth=jPrefer.getDouble("binWidth", 0);
 			resegmentLimit=jPrefer.getBoolean("resegmentLimit", false);
 			min=jPrefer.getDouble("min", 0);
@@ -522,41 +522,43 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			
 		
 	}
-	
+	/**
+	 * Load option data from panel option in this main class
+	 */
 	private void getOptions() {
-		discretize=option.isDiscretize();
-		fixedbin=option.isFixedBin();
+		discretize=option.chckbxDiscretize.isSelected();
+		fixedbin=option.chckbxEnableFixedBin.isSelected();
 		binWidth=option.getfixedBinWidth();
-		resegmentLimit=option.isResgmentLimit();
-		min=option.getMin();
-		max=option.getMax();
-		resegmentPerRoi=option.getResegmentPerRoi();
+		resegmentLimit=option.chckbxResegmentation.isSelected();
+		min=option.getResegmentMin();
+		max=option.getResegmentMax();
+		useFixedBinPerRoi=option.chckbxEnableFixedBin.isSelected();
 		fixedBinPerRoi=option.getNumberOfBin();
 		//Get the Normalize settings
-		normalize=option.isNormalize();
+		normalize=option.checkBoxNormalize.isSelected();
 		normalizeScale=option.getNormalizeScale();
 		removeOutliners=option.getRemoveOutliners();
 		//Get ImageResampling 
-		resample=option.isResampleImage();
+		resample=option.chckbxResampleImage.isSelected();
 		pixelSpacing=option.getResamplePixelSpacing();
-		interpolator=option.getInterpolator();
-		padDistance=option.getPadDistance();
+		interpolator=(String) option.comboBox_Interpolator.getSelectedItem();
+		padDistance=(int) option.spinner_padDistance.getValue();
 		// Get Validate Mask
-		validateMask=option.isValidateMask();
-		minRoiDimension=option.getMinRoiDimension();
-		minRoiSize=option.getMinRoiSize();
+		validateMask=option.chckbxValidateMask.isSelected();
+		minRoiDimension=(int) option.spinner_minRoiDimension.getValue();
+		minRoiSize=(int) option.spinner_minRoiSize.getValue();
 		geometryTolerance=option.getGeometryTolerance();
-		correctMask=option.getCorrectMask();
+		correctMask=option.chckbxCorrectMask.isSelected();
 		//Get others
-		isForce2DExtraction=option.isForce2DExtraction();
-		Dimension2D=option.get2DExtractionDimension();
+		isForce2DExtraction=option.chckbxForce2DExtraction.isSelected();
+		Dimension2D=(int) option.spinner_2D_Dimension.getValue();
 		matrixWeighting=option.getWeighting();
-		isDistance=option.isDistance();
+		isDistance=option.chckbxUseDistancesToNeighbour.isSelected();
 		distanceNeighbour=option.getDistances();
-		preCroping=option.getPreCropping();
+		preCroping=option.chckbxPrecropping.isSelected();
 		//Get Specific Settings 
-		voxelArrayShift=option.getVoxelShiftArray();
-		symetricalGLCM=option.getSymetricalGLCM();
+		voxelArrayShift=(int) option.spinner_VoxelArrayShift.getValue();
+		symetricalGLCM=option.chckbxSymetricalGlcm.isSelected();
 		alfa=option.getAlfaGLDM();
 		//Get file settings
 		fileSettingsOption=option.getSettingFile();
@@ -564,16 +566,68 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		featureSelection=option.getSelectedFeatures();
 		//Get Log And Wavelet Parameters
 		logSigma=option.getLogSigma();
-		waveletStart=option.getWaveletLevel();
-		waveletLevel=option.getWaveletLevel();
+		waveletStart=(int) option.spinner_startLevelWavelet.getValue();
+		waveletLevel=(int) option.spinner_Wavelet_Level.getValue();
 		waveletString=option.getWaveletString();
-		useGradientSpacing=option.getGradientUseSpacing();
+		useGradientSpacing=option.chckbxGradientSpacing.isSelected();
 		//get ImageType
 		imageType=option.getImageType();
 		
 		//Save all in the registery
 		this.optionSet=true;
 		saveSettingsInRegistery();
+		
+	}
+	
+	//SK A FAIRE SETTEUR D OPTION EN MEMOIRE DANS LA GUI
+	private void setOptions() {
+		option.chckbxDiscretize.setSelected(discretize);
+		option.chckbxEnableFixedBin.setSelected(fixedbin);
+		option.setfixedBinWidth(binWidth);
+		option.chckbxResegmentation.setSelected(resegmentLimit);
+		option.setResegment(min, max);
+		option.chckbxEnableFixedBin.setSelected(useFixedBinPerRoi);
+		option.setNumberOfBin(fixedBinPerRoi);
+		option.checkBoxNormalize.setSelected(normalize);
+		option.setNormalizeScale(normalizeScale);
+		option.setRemoveOutliners(removeOutliners);
+		option.chckbxResampleImage.setSelected(resample);
+		option.setResamplePixelSpacing(pixelSpacing);
+		option.setInterpolator(interpolator);
+		option.spinner_padDistance.setValue((int) padDistance);
+		option.chckbxValidateMask.setSelected(validateMask);
+		
+		//minRoiDimension=(int) option.spinner_minRoiDimension.getValue();
+		//minRoiSize=(int) option.spinner_minRoiSize.getValue();
+		//geometryTolerance=option.getGeometryTolerance();
+		option.chckbxCorrectMask.setSelected(correctMask);
+		option.chckbxForce2DExtraction.setSelected(isForce2DExtraction);
+		//Dimension2D=(int) option.spinner_2D_Dimension.getValue();
+		//matrixWeighting=option.getWeighting();
+		option.chckbxUseDistancesToNeighbour.setSelected(isDistance);
+		//distanceNeighbour=option.getDistances();
+	
+		option.chckbxPrecropping.setSelected(preCroping);
+		
+		//Get Specific Settings 
+		//voxelArrayShift=(int) option.spinner_VoxelArrayShift.getValue();
+		
+		option.chckbxSymetricalGlcm.setSelected(symetricalGLCM);
+		
+		//alfa=option.getAlfaGLDM();
+		
+		//Get the feature Selection
+		//featureSelection=option.getSelectedFeatures();
+		//Get Log And Wavelet Parameters
+		//logSigma=option.getLogSigma();
+		//waveletStart=(int) option.spinner_startLevelWavelet.getValue();
+		//waveletLevel=(int) option.spinner_Wavelet_Level.getValue();
+		//waveletString=option.getWaveletString();
+		
+		option.chckbxGradientSpacing.setSelected(useGradientSpacing);
+		//get ImageType
+		//imageType=option.getImageType();
+		
 		
 	}
 	

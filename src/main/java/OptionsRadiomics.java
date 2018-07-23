@@ -49,18 +49,63 @@ import javax.swing.event.ChangeEvent;
 @SuppressWarnings("serial")
 public class OptionsRadiomics extends JDialog {
 	
-	private JTextField txtMin,txtMax, textField, txtNormalizeScale, txtRemoveOutliners, txtX, txtY, txtZ, textField_GeometryTolerance, txt_setDistances,txt_setAlfa,txtWaveletTxt ;
-	private JCheckBox chckbxFixedBinWidth, chckbxFixedNumberOf_1, chckbxResgmentationvalueLimits, chckbxFirstOrder, chckbxShape,chckbxGlcm,chckbxGlrlm,chckbxGlszm,chckbxNgtdm,chckbxGtdm, checkBoxNormalize,chckbxCorrectMask,
-	chckbxResampleImage, chckbxValidateMask, chckbxForcedExtraction, chckbxPrecropping, chckbxSymetricalGlcm, chckbxSetDistances, chckbxDiscretize, chckbxGradient, chckbxGradientSpacing, chckbxAdditionalInfo;
-	private JSpinner spinner_Dimension2D, spinnerBinFixed, spinner_padDistance, spinner_minRoiDimension, spinner_minRoiSize, spinner_VoxelArrayShift,
-	spinner_startLevelWavelet,spinner_Wavelet_Level;
-	List<JCheckBox> imageType = new ArrayList<JCheckBox>();
+	protected JTextField 
+	txtResegmentationMin,
+	txtResegmentationMax, 
+	txtFixedBinWidth, 
+	txtNormalizeScale, 
+	txtRemoveOutliners, 
+	txtXPixelSpacing, 
+	txtYPixelSpacing, 
+	txtZPixelSpacing, 
+	textField_GeometryTolerance, 
+	txt_setDistances,
+	txt_setAlfa,
+	txtGaussianSigma,
+	txtWavelet ;
+	
+	protected JCheckBox 
+	chckbxFixedBinWidth, 
+	chckbxEnableFixedBin, 
+	chckbxResegmentation, 
+	chckbxAdditionalInfo,
+	chckbxFirstOrder, 
+	chckbxShape,
+	chckbxGlcm, 
+	chckbxGlrlm,
+	chckbxGlszm,
+	chckbxNgtdm,
+	chckbxGtdm,
+	checkBoxNormalize, 
+	chckbxCorrectMask,
+	chckbxResampleImage,
+	chckbxValidateMask,
+	chckbxForce2DExtraction,
+	chckbxPrecropping,
+	chckbxSymetricalGlcm,
+	chckbxUseDistancesToNeighbour,
+	chckbxDiscretize,
+	chckbxGradient,
+	chckbxGradientSpacing;
+	
+	protected JSpinner 
+	spinner_2D_Dimension, 
+	spinnerBinFixed, 
+	spinner_padDistance, 
+	spinner_minRoiDimension, 
+	spinner_minRoiSize, 
+	spinner_VoxelArrayShift,
+	spinner_startLevelWavelet,
+	spinner_Wavelet_Level;
+	
+	protected List<JCheckBox> imageType = new ArrayList<JCheckBox>();
+	protected JComboBox<String> comboBox_Interpolator, comboBox_Weighting;
+	
 	private Double fixedBinWidth, min, max;
 	private int numberOfBin;
+	
 	private File settingsFile=null;
-	private JComboBox<String> comboBox_Interpolator, comboBox_Weighting;
-	private JTextField txtGaussianSigma;
-	private boolean ok=false;
+	protected boolean ok=false;
 
 	/**
 	 * Launch the application.
@@ -178,53 +223,53 @@ public class OptionsRadiomics extends JDialog {
 			chckbxFixedBinWidth.setSelected(true);
 			panel_3.add(chckbxFixedBinWidth);
 				
-			textField = new JTextField("25");
-			panel_3.add(textField);
-			textField.setColumns(5);
+			txtFixedBinWidth = new JTextField("25");
+			panel_3.add(txtFixedBinWidth);
+			txtFixedBinWidth.setColumns(5);
 				
 			JPanel panel_2 = new JPanel();
 			Discretization_Center.add(panel_2);
 			
-			chckbxResgmentationvalueLimits = new JCheckBox("Resgmentation (Value limits)");
-			chckbxResgmentationvalueLimits.addChangeListener(new ChangeListener()  {
+			chckbxResegmentation = new JCheckBox("Resgmentation (Value limits)");
+			chckbxResegmentation.addChangeListener(new ChangeListener()  {
 				public void stateChanged (ChangeEvent e) {
-					if (!chckbxFixedNumberOf_1.isSelected()){
-						if (chckbxResgmentationvalueLimits.isSelected()) {
-						txtMin.setEnabled(true); 
-						txtMax.setEnabled(true);
+					if (!chckbxEnableFixedBin.isSelected()){
+						if (chckbxResegmentation.isSelected()) {
+						txtResegmentationMin.setEnabled(true); 
+						txtResegmentationMax.setEnabled(true);
 					}
-						else if (!chckbxResgmentationvalueLimits.isSelected()) {
-						txtMin.setEnabled(false); 
-						txtMax.setEnabled(false);	
+						else if (!chckbxResegmentation.isSelected()) {
+						txtResegmentationMin.setEnabled(false); 
+						txtResegmentationMax.setEnabled(false);	
 					}
 					}
 					
 				}
 			});
-			panel_2.add(chckbxResgmentationvalueLimits);
+			panel_2.add(chckbxResegmentation);
 			
 			JLabel lblMin = new JLabel("min");
 			panel_2.add(lblMin);
 
-			txtMin = new JTextField();
-			txtMin.setEnabled(false);
-			panel_2.add(txtMin);
-			txtMin.setText("0");
-			txtMin.setColumns(5);
+			txtResegmentationMin = new JTextField();
+			txtResegmentationMin.setEnabled(false);
+			panel_2.add(txtResegmentationMin);
+			txtResegmentationMin.setText("0");
+			txtResegmentationMin.setColumns(5);
 			
 			JLabel lblMax = new JLabel("max");
 			panel_2.add(lblMax);
 	
-			txtMax = new JTextField();
-			txtMax.setEnabled(false);
-			panel_2.add(txtMax);
-			txtMax.setText("0");
-			txtMax.setColumns(5);
+			txtResegmentationMax = new JTextField();
+			txtResegmentationMax.setEnabled(false);
+			panel_2.add(txtResegmentationMax);
+			txtResegmentationMax.setText("0");
+			txtResegmentationMax.setColumns(5);
 	
 			JPanel panel_1 = new JPanel();
 			Discretization_Center.add(panel_1);
-			chckbxFixedNumberOf_1 = new JCheckBox("Fixed bins per ROI");
-			panel_1.add(chckbxFixedNumberOf_1);
+			chckbxEnableFixedBin = new JCheckBox("Fixed bins per ROI");
+			panel_1.add(chckbxEnableFixedBin);
 		
 			spinnerBinFixed = new JSpinner();
 			spinnerBinFixed.setModel(new SpinnerNumberModel(0, null, 1000, 1));
@@ -240,20 +285,20 @@ public class OptionsRadiomics extends JDialog {
 			});
 			Discretization_Panel.add(chckbxDiscretize, BorderLayout.WEST);
 					
-			chckbxFixedNumberOf_1.addChangeListener(new ChangeListener() {
+			chckbxEnableFixedBin.addChangeListener(new ChangeListener() {
 				public void stateChanged (ChangeEvent e) {
-					if (chckbxFixedNumberOf_1.isSelected()) {
+					if (chckbxEnableFixedBin.isSelected()) {
 						chckbxFixedBinWidth.setSelected(false);
-						chckbxResgmentationvalueLimits.setSelected(false);
-						textField.setEnabled(false);
-						txtMin.setEnabled(false);
-						txtMax.setEnabled(false);
+						chckbxResegmentation.setSelected(false);
+						txtFixedBinWidth.setEnabled(false);
+						txtResegmentationMin.setEnabled(false);
+						txtResegmentationMax.setEnabled(false);
 						spinnerBinFixed.setEnabled(true);
 						
 					}
 					else{
 						chckbxFixedBinWidth.setSelected(true);
-						textField.setEnabled(true);
+						txtFixedBinWidth.setEnabled(true);
 						spinnerBinFixed.setEnabled(false);
 					}
 				}
@@ -263,12 +308,12 @@ public class OptionsRadiomics extends JDialog {
 				public void stateChanged (ChangeEvent e) {
 				//Disable fixed bin number
 				if (chckbxFixedBinWidth.isSelected()) {
-					chckbxFixedNumberOf_1.setSelected(false);
-					textField.setEnabled(true);
+					chckbxEnableFixedBin.setSelected(false);
+					txtFixedBinWidth.setEnabled(true);
 				}
 				else{
-					textField.setEnabled(false);
-					chckbxFixedNumberOf_1.setSelected(true);
+					txtFixedBinWidth.setEnabled(false);
+					chckbxEnableFixedBin.setSelected(true);
 					
 				}
 				}
@@ -360,31 +405,31 @@ public class OptionsRadiomics extends JDialog {
 			JLabel lblPixelSpacing = new JLabel("Pixel Spacing");
 			panel_pixelSpacing.add(lblPixelSpacing);		
 							
-			txtX = new JTextField();
-			txtX.setEnabled(false);
-			txtX.setText("0.0");
-			txtX.setColumns(3);			
-			txtY = new JTextField();
-			txtY.setEnabled(false);
-			txtY.setText("0.0");
-			txtY.setColumns(3);				
-			txtZ = new JTextField();
-			txtZ.setEnabled(false);
-			txtZ.setText("0.0");
-			txtZ.setColumns(3);
+			txtXPixelSpacing = new JTextField();
+			txtXPixelSpacing.setEnabled(false);
+			txtXPixelSpacing.setText("0.0");
+			txtXPixelSpacing.setColumns(3);			
+			txtYPixelSpacing = new JTextField();
+			txtYPixelSpacing.setEnabled(false);
+			txtYPixelSpacing.setText("0.0");
+			txtYPixelSpacing.setColumns(3);				
+			txtZPixelSpacing = new JTextField();
+			txtZPixelSpacing.setEnabled(false);
+			txtZPixelSpacing.setText("0.0");
+			txtZPixelSpacing.setColumns(3);
 			
 			JLabel lblX = new JLabel("X");
 			panel_pixelSpacing.add(lblX);
 			
-			panel_pixelSpacing.add(txtX);
+			panel_pixelSpacing.add(txtXPixelSpacing);
 			
 			JLabel lblY = new JLabel("Y");
 			panel_pixelSpacing.add(lblY);
-			panel_pixelSpacing.add(txtY);
+			panel_pixelSpacing.add(txtYPixelSpacing);
 			
 			JLabel lblZ = new JLabel("Z");
 			panel_pixelSpacing.add(lblZ);
-			panel_pixelSpacing.add(txtZ);
+			panel_pixelSpacing.add(txtZPixelSpacing);
 	
 			JPanel panel_Interpolator = new JPanel();
 			panel_Resampling.add(panel_Interpolator);
@@ -500,23 +545,23 @@ public class OptionsRadiomics extends JDialog {
 			JPanel panel_2DExtraction = new JPanel();
 			panel_OrtherSettings.add(panel_2DExtraction);
 			
-			chckbxForcedExtraction = new JCheckBox("Force 2D Extraction");
-				chckbxForcedExtraction.addChangeListener(new ChangeListener() {
+			chckbxForce2DExtraction = new JCheckBox("Force 2D Extraction");
+				chckbxForce2DExtraction.addChangeListener(new ChangeListener() {
 					public void stateChanged(ChangeEvent arg0) {
-						if (chckbxForcedExtraction.isSelected()) spinner_Dimension2D.setEnabled(true);
-						if (!chckbxForcedExtraction.isSelected()) spinner_Dimension2D.setEnabled(false);
+						if (chckbxForce2DExtraction.isSelected()) spinner_2D_Dimension.setEnabled(true);
+						if (!chckbxForce2DExtraction.isSelected()) spinner_2D_Dimension.setEnabled(false);
 					}
 				});
-			panel_2DExtraction.add(chckbxForcedExtraction);	
+			panel_2DExtraction.add(chckbxForce2DExtraction);	
 					
 			JLabel lblDimension2D = new JLabel("Dimension :");
 			panel_2DExtraction.add(lblDimension2D);
 		
-			spinner_Dimension2D = new JSpinner();
-			spinner_Dimension2D.setToolTipText("Specifies the \u2018slice\u2019 dimension for a by-slice feature extraction");
-			spinner_Dimension2D.setEnabled(false);
-			spinner_Dimension2D.setModel(new SpinnerNumberModel(0, 0, 2, 1));
-			panel_2DExtraction.add(spinner_Dimension2D);
+			spinner_2D_Dimension = new JSpinner();
+			spinner_2D_Dimension.setToolTipText("Specifies the \u2018slice\u2019 dimension for a by-slice feature extraction");
+			spinner_2D_Dimension.setEnabled(false);
+			spinner_2D_Dimension.setModel(new SpinnerNumberModel(0, 0, 2, 1));
+			panel_2DExtraction.add(spinner_2D_Dimension);
 					
 			JPanel panel_Weighting = new JPanel();
 			panel_OrtherSettings.add(panel_Weighting);
@@ -535,10 +580,10 @@ public class OptionsRadiomics extends JDialog {
 			JPanel panel_SetDistances = new JPanel();
 			panel_OrtherSettings.add(panel_SetDistances);
 			
-			chckbxSetDistances = new JCheckBox("Set Distances to neighbour");
-			chckbxSetDistances.addChangeListener(new ChangeListener() {
+			chckbxUseDistancesToNeighbour = new JCheckBox("Set Distances to neighbour");
+			chckbxUseDistancesToNeighbour.addChangeListener(new ChangeListener() {
 					public void stateChanged(ChangeEvent e) {
-						if (chckbxSetDistances.isSelected()) {
+						if (chckbxUseDistancesToNeighbour.isSelected()) {
 							txt_setDistances.setEnabled(true);
 						}
 						else {
@@ -546,7 +591,7 @@ public class OptionsRadiomics extends JDialog {
 						}
 					}
 				});
-			panel_SetDistances.add(chckbxSetDistances);
+			panel_SetDistances.add(chckbxUseDistancesToNeighbour);
 			
 			txt_setDistances = new JTextField();
 			txt_setDistances.setToolTipText(" List of integers specifies the distances between the center voxel and the neighbor");
@@ -661,12 +706,12 @@ public class OptionsRadiomics extends JDialog {
 					if (chckbxWavelet.isSelected()) {
 						spinner_startLevelWavelet.setEnabled(true);
 						spinner_Wavelet_Level.setEnabled(true);
-						txtWaveletTxt.setEnabled(true);
+						txtWavelet.setEnabled(true);
 					}
 					else if (!chckbxWavelet.isSelected()) {
 						spinner_startLevelWavelet.setEnabled(false);
 						spinner_Wavelet_Level.setEnabled(false);
-						txtWaveletTxt.setEnabled(false);
+						txtWavelet.setEnabled(false);
 					}
 				}
 			});
@@ -728,11 +773,11 @@ public class OptionsRadiomics extends JDialog {
 			JLabel lblWavelet_1 = new JLabel("Wavelet");
 			panel_Wavelet_Options.add(lblWavelet_1);
 			
-			txtWaveletTxt = new JTextField();
-			txtWaveletTxt.setEnabled(false);
-			txtWaveletTxt.setText("coif1");
-			panel_Wavelet_Options.add(txtWaveletTxt);
-			txtWaveletTxt.setColumns(10);
+			txtWavelet = new JTextField();
+			txtWavelet.setEnabled(false);
+			txtWavelet.setText("coif1");
+			panel_Wavelet_Options.add(txtWavelet);
+			txtWavelet.setColumns(10);
 			
 			JPanel panel_Log_Options = new JPanel();
 			panel.add(panel_Log_Options, BorderLayout.NORTH);
@@ -831,16 +876,16 @@ public class OptionsRadiomics extends JDialog {
 	
 	private void enableResample(boolean enable) {
 		if (enable) {
-			txtX.setEnabled(true);
-			txtY.setEnabled(true);
-			txtZ.setEnabled(true);
+			txtXPixelSpacing.setEnabled(true);
+			txtYPixelSpacing.setEnabled(true);
+			txtZPixelSpacing.setEnabled(true);
 			spinner_padDistance.setEnabled(true);
 			comboBox_Interpolator.setEnabled(true);
 		}
 		else {
-			txtX.setEnabled(false);
-			txtY.setEnabled(false);
-			txtZ.setEnabled(false);
+			txtXPixelSpacing.setEnabled(false);
+			txtYPixelSpacing.setEnabled(false);
+			txtZPixelSpacing.setEnabled(false);
 			spinner_padDistance.setEnabled(false);
 			comboBox_Interpolator.setEnabled(false);
 		}
@@ -864,40 +909,42 @@ public class OptionsRadiomics extends JDialog {
 	private void enableDiscretize(boolean discretize) {
 		if (discretize) {
 			chckbxFixedBinWidth.setEnabled(true);
-			chckbxResgmentationvalueLimits.setEnabled(true);
-			chckbxFixedNumberOf_1.setEnabled(true);
-			textField.setEnabled(true);
+			chckbxResegmentation.setEnabled(true);
+			chckbxEnableFixedBin.setEnabled(true);
+			txtFixedBinWidth.setEnabled(true);
 			
 		}
 		else {
 			chckbxFixedBinWidth.setEnabled(false);
-			chckbxResgmentationvalueLimits.setEnabled(false);
-			chckbxFixedNumberOf_1.setEnabled(false);
+			chckbxResegmentation.setEnabled(false);
+			chckbxEnableFixedBin.setEnabled(false);
 			
 		}
 	}
 	
-	public boolean isDiscretize() {
-		return chckbxDiscretize.isSelected();
-	}
-	
-	public boolean getOk() {
-		return ok;
-	}
 	
 	public Double getfixedBinWidth(){
-		fixedBinWidth=Double.parseDouble(textField.getText());
+		fixedBinWidth=Double.parseDouble(txtFixedBinWidth.getText());
 		return fixedBinWidth;
 	}
 	
-	public double getMin(){
-		min=Double.parseDouble(txtMin.getText());
+	public void setfixedBinWidth(double binWidth) {
+		txtFixedBinWidth.setText(String.valueOf(binWidth)); 
+	}
+	
+	public double getResegmentMin(){
+		min=Double.parseDouble(txtResegmentationMin.getText());
 		return min;
 	}
 	
-	public double getMax(){
-		max=Double.parseDouble(txtMax.getText());
+	public double getResegmentMax(){
+		max=Double.parseDouble(txtResegmentationMax.getText());
 		return max;
+	}
+	
+	public void setResegment(double min, double max) {
+		txtResegmentationMin.setText(String.valueOf(min));
+		txtResegmentationMax.setText(String.valueOf(max));
 	}
 	
 	public int getNumberOfBin(){
@@ -905,101 +952,58 @@ public class OptionsRadiomics extends JDialog {
 		return numberOfBin;
 	}
 	
-	public boolean getResegmentPerRoi(){
-		return chckbxFixedNumberOf_1.isSelected();
+	public void setNumberOfBin(int numberBin){
+		spinnerBinFixed.setValue(numberBin);
 	}
 	
-	public boolean isFixedBin(){
-		return chckbxFixedBinWidth.isSelected();
-	}
-	
-	public boolean isResgmentLimit(){
-		return chckbxResgmentationvalueLimits.isSelected();
-	}
-	
-	public boolean isNormalize(){
-		return checkBoxNormalize.isSelected();
-	}
 	
 	public double getNormalizeScale() {
 		return Double.parseDouble(txtNormalizeScale.getText());
+	}
+	
+	public void setNormalizeScale(double normalizeScale) {
+		txtNormalizeScale.setText(String.valueOf(normalizeScale));
 	}
 	
 	public double getRemoveOutliners() {
 		return Double.parseDouble(txtRemoveOutliners.getText());
 	}
 	
-	public boolean isResampleImage() {
-		return chckbxResampleImage.isSelected();
+	public void setRemoveOutliners(double outliners) {
+		txtRemoveOutliners.setText(String.valueOf(outliners));
 	}
 	
 	public double[] getResamplePixelSpacing() {
 		double[] pixelSpacing=new double[3];
-		pixelSpacing[0] = Double.parseDouble(txtX.getText());
-		pixelSpacing[1] = Double.parseDouble(txtY.getText());
-		pixelSpacing[2] = Double.parseDouble(txtZ.getText());
+		pixelSpacing[0] = Double.parseDouble(txtXPixelSpacing.getText());
+		pixelSpacing[1] = Double.parseDouble(txtYPixelSpacing.getText());
+		pixelSpacing[2] = Double.parseDouble(txtZPixelSpacing.getText());
 		return pixelSpacing;
 	}
 	
-	public String getInterpolator() {
-		return (String) comboBox_Interpolator.getSelectedItem();
+	public void setResamplePixelSpacing(double[] pixelSpacing) {
+		txtXPixelSpacing.setText( String.valueOf(pixelSpacing[0]) );
+		txtYPixelSpacing.setText( String.valueOf(pixelSpacing[1]) );
+		txtZPixelSpacing.setText( String.valueOf(pixelSpacing[2]) );
 	}
 	
-	public int getPadDistance() {
-		return (int) spinner_padDistance.getValue();
-	}
-	
-	public boolean isValidateMask() {
-		return chckbxValidateMask.isSelected();
-	}
-	
-	public int getMinRoiDimension() {
-		return (int) spinner_minRoiDimension.getValue();
-	}
-	
-	public int getMinRoiSize() {
-		return (int) spinner_minRoiSize.getValue();
+	public void setInterpolator(String interpolator) {
+		comboBox_Interpolator.setSelectedItem(interpolator);
 	}
 	
 	public double getGeometryTolerance() {
 		return Double.parseDouble(textField_GeometryTolerance.getText());
 	}
 	
-	public boolean getCorrectMask() {
-		return chckbxCorrectMask.isSelected();
-	}
-	
-	public boolean isForce2DExtraction() {
-		return chckbxForcedExtraction.isSelected();
-	}
-	
-	public int get2DExtractionDimension() {
-		return (int) spinner_Dimension2D.getValue();
-	}
 	
 	public String getWeighting() {
 		return (String) comboBox_Weighting.getSelectedItem();
-	}
-	
-	public boolean isDistance(){
-		return chckbxSetDistances.isSelected();
 	}
 	
 	public String getDistances() {
 		return txt_setDistances.getText();
 	}
 	
-	public boolean getPreCropping() {
-		return chckbxPrecropping.isSelected();
-	}
-	
-	public int getVoxelShiftArray() {
-		return (int)spinner_VoxelArrayShift.getValue();
-	}
-	
-	public boolean getSymetricalGLCM() {
-		return chckbxSymetricalGlcm.isSelected();
-	}
 	
 	public double getAlfaGLDM() {
 		return Double.parseDouble(txt_setAlfa.getText());
@@ -1039,22 +1043,11 @@ public class OptionsRadiomics extends JDialog {
 		return txtGaussianSigma.getText();
 	}
 	
-	public int getWaveletStart() {
-		return (int)spinner_startLevelWavelet.getValue();
-	}
-	
-	public int getWaveletLevel() {
-		return (int)spinner_Wavelet_Level.getValue();
-	}
-	
-	public boolean getGradientUseSpacing() {
-		return this.chckbxGradientSpacing.isSelected();
-	}
-	
 	public String getWaveletString() {
-		return txtWaveletTxt.getText();
+		return txtWavelet.getText();
 	}
 	// Set settings before opening settings GUI
+	// SK A FAIRE DISPARAITRE VIA LA METHODE SET AVANT LE SHOW DANS LA FRAME PARENTE
 	public void setExistingSettings(boolean optionSet, boolean fixedBin, boolean resegmentPerRoi, double binWidth, boolean resegmentLimit, double min, double max, int fixedBinPerRoi,
 			boolean normalize, double normalizeScale, double removeOutliners, boolean resample, double[] pixelSpacing, String interpolator, int padDistance,
 			boolean validateMask, int minRoiDimension, int minRoiSize, double geometryTolerance, boolean correctMask,
@@ -1063,11 +1056,11 @@ public class OptionsRadiomics extends JDialog {
 			){
 		if (optionSet) {
 			chckbxFixedBinWidth.setSelected(fixedBin);
-			textField.setText(String.valueOf(binWidth));
-			chckbxResgmentationvalueLimits.setSelected(resegmentLimit);
-			txtMin.setText(String.valueOf(min)); 
-			txtMax.setText(String.valueOf(max));
-			chckbxFixedNumberOf_1.setSelected(!fixedBin);
+			txtFixedBinWidth.setText(String.valueOf(binWidth));
+			chckbxResegmentation.setSelected(resegmentLimit);
+			txtResegmentationMin.setText(String.valueOf(min)); 
+			txtResegmentationMax.setText(String.valueOf(max));
+			chckbxEnableFixedBin.setSelected(!fixedBin);
 			spinnerBinFixed.setValue(fixedBinPerRoi);
 			
 			checkBoxNormalize.setSelected(normalize);
@@ -1075,9 +1068,9 @@ public class OptionsRadiomics extends JDialog {
 			txtRemoveOutliners.setText(String.valueOf(removeOutliners));
 			
 			chckbxResampleImage.setSelected(resample);
-			txtX.setText(String.valueOf(pixelSpacing[0]));
-			txtY.setText(String.valueOf(pixelSpacing[1]));
-			txtZ.setText(String.valueOf(pixelSpacing[2]));
+			txtXPixelSpacing.setText(String.valueOf(pixelSpacing[0]));
+			txtYPixelSpacing.setText(String.valueOf(pixelSpacing[1]));
+			txtZPixelSpacing.setText(String.valueOf(pixelSpacing[2]));
 			comboBox_Interpolator.setSelectedItem(interpolator);
 			spinner_padDistance.setValue(padDistance);
 			
@@ -1087,10 +1080,10 @@ public class OptionsRadiomics extends JDialog {
 			textField_GeometryTolerance.setText(String.valueOf(geometryTolerance));
 			chckbxCorrectMask.setSelected(correctMask);
 			
-			chckbxForcedExtraction.setSelected(isForce2DExtraction);
-			spinner_Dimension2D.setValue(Dimension2D);
+			chckbxForce2DExtraction.setSelected(isForce2DExtraction);
+			spinner_2D_Dimension.setValue(Dimension2D);
 			comboBox_Weighting.setSelectedItem(matrixWeighting);
-			chckbxSetDistances.setSelected(isDistance);
+			chckbxUseDistancesToNeighbour.setSelected(isDistance);
 			txt_setDistances.setText(distanceNeighbour);
 			chckbxPrecropping.setSelected(preCroping);
 			
@@ -1099,7 +1092,7 @@ public class OptionsRadiomics extends JDialog {
 			txt_setAlfa.setText(String.valueOf(alfa));
 			
 			txtGaussianSigma.setText(logSigma);
-			txtWaveletTxt.setText(waveletString);
+			txtWavelet.setText(waveletString);
 			spinner_startLevelWavelet.setValue(waveletStart);
 			spinner_Wavelet_Level.setValue(waveletLevel);
 			
