@@ -51,7 +51,7 @@ public class OptionsRadiomics extends JDialog {
 	
 	private JTextField txtMin,txtMax, textField, txtNormalizeScale, txtRemoveOutliners, txtX, txtY, txtZ, textField_GeometryTolerance, txt_setDistances,txt_setAlfa,txtWaveletTxt ;
 	private JCheckBox chckbxFixedBinWidth, chckbxFixedNumberOf_1, chckbxResgmentationvalueLimits, chckbxFirstOrder, chckbxShape,chckbxGlcm,chckbxGlrlm,chckbxGlszm,chckbxNgtdm,chckbxGtdm, checkBoxNormalize,chckbxCorrectMask,
-	chckbxResampleImage, chckbxValidateMask, chckbxForcedExtraction, chckbxPrecropping, chckbxSymetricalGlcm, chckbxSetDistances, chckbxDiscretize;
+	chckbxResampleImage, chckbxValidateMask, chckbxForcedExtraction, chckbxPrecropping, chckbxSymetricalGlcm, chckbxSetDistances, chckbxDiscretize, chckbxGradient, chckbxGradientSpacing, chckbxAdditionalInfo;
 	private JSpinner spinner_Dimension2D, spinnerBinFixed, spinner_padDistance, spinner_minRoiDimension, spinner_minRoiSize, spinner_VoxelArrayShift,
 	spinner_startLevelWavelet,spinner_Wavelet_Level;
 	List<JCheckBox> imageType = new ArrayList<JCheckBox>();
@@ -685,59 +685,75 @@ public class OptionsRadiomics extends JDialog {
 			panel_2.add(chckbxExponential);
 			imageType.add(chckbxExponential);
 			
+			chckbxGradient = new JCheckBox("Gradient");
+			chckbxGradient.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					if(chckbxGradient.isSelected()) chckbxGradientSpacing.setEnabled(true);
+					else chckbxGradientSpacing.setEnabled(false);
+				}
+			});
+			panel_2.add(chckbxGradient);
+			imageType.add(chckbxGradient);
+			
 			JPanel panel = new JPanel();
 			ImageType_CheckBox.add(panel);
 			panel.setLayout(new BorderLayout(0, 0));
 			
-			JPanel panel_1 = new JPanel();
-			panel.add(panel_1, BorderLayout.CENTER);
-			panel_1.setLayout(new GridLayout(0, 2, 0, 0));
+			JPanel panel_Wavelet_Options = new JPanel();
+			panel.add(panel_Wavelet_Options, BorderLayout.CENTER);
+			panel_Wavelet_Options.setLayout(new GridLayout(0, 2, 0, 0));
 			
 			JLabel lblWavelet = new JLabel("Wavelet");
-			panel_1.add(lblWavelet);
+			panel_Wavelet_Options.add(lblWavelet);
 			
 			Component horizontalStrut = Box.createHorizontalStrut(20);
-			panel_1.add(horizontalStrut);
+			panel_Wavelet_Options.add(horizontalStrut);
 			
 			JLabel lblStartLevel = new JLabel("Start Level");
-			panel_1.add(lblStartLevel);
+			panel_Wavelet_Options.add(lblStartLevel);
 			
 			spinner_startLevelWavelet = new JSpinner();
 			spinner_startLevelWavelet.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 			spinner_startLevelWavelet.setEnabled(false);
-			panel_1.add(spinner_startLevelWavelet);
+			panel_Wavelet_Options.add(spinner_startLevelWavelet);
 			
 			JLabel lblLevel = new JLabel("Level");
-			panel_1.add(lblLevel);
+			panel_Wavelet_Options.add(lblLevel);
 			
 			spinner_Wavelet_Level = new JSpinner();
 			spinner_Wavelet_Level.setModel(new SpinnerNumberModel(new Integer(1), new Integer(0), null, new Integer(1)));
 			spinner_Wavelet_Level.setEnabled(false);
-			panel_1.add(spinner_Wavelet_Level);
+			panel_Wavelet_Options.add(spinner_Wavelet_Level);
 			
 			JLabel lblWavelet_1 = new JLabel("Wavelet");
-			panel_1.add(lblWavelet_1);
+			panel_Wavelet_Options.add(lblWavelet_1);
 			
 			txtWaveletTxt = new JTextField();
 			txtWaveletTxt.setEnabled(false);
 			txtWaveletTxt.setText("coif1");
-			panel_1.add(txtWaveletTxt);
+			panel_Wavelet_Options.add(txtWaveletTxt);
 			txtWaveletTxt.setColumns(10);
 			
-			JPanel panel_3 = new JPanel();
-			panel.add(panel_3, BorderLayout.NORTH);
+			JPanel panel_Log_Options = new JPanel();
+			panel.add(panel_Log_Options, BorderLayout.NORTH);
 			
 			JLabel lblLog = new JLabel("LoG");
-			panel_3.add(lblLog);
+			panel_Log_Options.add(lblLog);
 			
 			JLabel lblSigma = new JLabel("Sigma");
-			panel_3.add(lblSigma);
+			panel_Log_Options.add(lblSigma);
 			
 			txtGaussianSigma = new JTextField();
 			txtGaussianSigma.setToolTipText("List of floats or integers, must be greater than 0");
 			txtGaussianSigma.setEnabled(false);
-			panel_3.add(txtGaussianSigma);
+			panel_Log_Options.add(txtGaussianSigma);
 			txtGaussianSigma.setColumns(10);
+			
+			JPanel panel_Gradient_Options = new JPanel();
+			panel.add(panel_Gradient_Options, BorderLayout.SOUTH);
+			
+			chckbxGradientSpacing = new JCheckBox("Gradient use spacing");
+			panel_Gradient_Options.add(chckbxGradientSpacing);
 			}
 			
 			{
@@ -773,6 +789,10 @@ public class OptionsRadiomics extends JDialog {
 			chckbxNgtdm.setSelected(true);
 			chckbxGtdm = new JCheckBox("GTDM");
 			chckbxGtdm.setSelected(true);
+			
+			chckbxAdditionalInfo = new JCheckBox("Additional Info");
+			chckbxAdditionalInfo.setSelected(true);
+			Features_Options.add(chckbxAdditionalInfo);
 			
 			
 			Features_Options.add(chckbxFirstOrder);
@@ -991,6 +1011,7 @@ public class OptionsRadiomics extends JDialog {
 	
 	public HashMap<String, Boolean> getSelectedFeatures(){
 		HashMap<String, Boolean> features=new HashMap<String, Boolean>();
+		features.put("Additional Info", chckbxAdditionalInfo.isSelected());
 		features.put("First Order", chckbxFirstOrder.isSelected());
 		features.put("Shape", chckbxShape.isSelected());
 		features.put("GLCM", chckbxGlcm.isSelected());
@@ -1010,6 +1031,7 @@ public class OptionsRadiomics extends JDialog {
 		imageType.put("typeSquareRoot", this.imageType.get(4).isSelected());
 		imageType.put("typeLogarithm", this.imageType.get(5).isSelected());
 		imageType.put("typeExponential", this.imageType.get(6).isSelected());
+		imageType.put("typeGradient", this.imageType.get(7).isSelected());
 		return  imageType;
 	}
 	
@@ -1025,6 +1047,10 @@ public class OptionsRadiomics extends JDialog {
 		return (int)spinner_Wavelet_Level.getValue();
 	}
 	
+	public boolean getGradientUseSpacing() {
+		return this.chckbxGradientSpacing.isSelected();
+	}
+	
 	public String getWaveletString() {
 		return txtWaveletTxt.getText();
 	}
@@ -1033,7 +1059,7 @@ public class OptionsRadiomics extends JDialog {
 			boolean normalize, double normalizeScale, double removeOutliners, boolean resample, double[] pixelSpacing, String interpolator, int padDistance,
 			boolean validateMask, int minRoiDimension, int minRoiSize, double geometryTolerance, boolean correctMask,
 			boolean isForce2DExtraction, boolean isDistance, int Dimension2D, String matrixWeighting, String distanceNeighbour, boolean preCroping,
-			int voxelArrayShift, boolean symetricalGLCM, double alfa, String logSigma, String waveletString, int waveletStart, int waveletLevel, HashMap<String, Boolean> imageType
+			int voxelArrayShift, boolean symetricalGLCM, double alfa, String logSigma, String waveletString, int waveletStart, int waveletLevel, boolean gradientUseSpacing, HashMap<String, Boolean> imageType
 			){
 		if (optionSet) {
 			chckbxFixedBinWidth.setSelected(fixedBin);
@@ -1077,6 +1103,8 @@ public class OptionsRadiomics extends JDialog {
 			spinner_startLevelWavelet.setValue(waveletStart);
 			spinner_Wavelet_Level.setValue(waveletLevel);
 			
+			chckbxGradientSpacing.setEnabled(gradientUseSpacing);
+			
 			if (imageType.get("typeOriginal")) this.imageType.get(0).setSelected(true);
 			if (imageType.get("typeLoG")) this.imageType.get(1).setSelected(true);
 			if (imageType.get("typeWavelet")) this.imageType.get(2).setSelected(true);
@@ -1084,11 +1112,13 @@ public class OptionsRadiomics extends JDialog {
 			if (imageType.get("typeSquareRoot")) this.imageType.get(4).setSelected(true);
 			if (imageType.get("typeLogarithm")) this.imageType.get(5).setSelected(true);
 			if (imageType.get("typeExponential")) this.imageType.get(6).setSelected(true);
+			if (imageType.get("typeGradient")) this.imageType.get(7).setSelected(true);
 			
 		}
 	}
 	
 	public void setSelectedFeatures(HashMap<String, Boolean> features){
+		if (!features.get("Additional Info")) chckbxAdditionalInfo.setSelected(false);
 		if (!features.get("First Order")) chckbxFirstOrder.setSelected(false);
 		if (!features.get("Shape")) chckbxShape.setSelected(false);
 		if (!features.get("GLCM")) chckbxGlcm.setSelected(false);

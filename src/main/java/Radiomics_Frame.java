@@ -98,6 +98,8 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	//Log and Wavelet Params
 	private String logSigma, waveletString;
 	private int waveletStart,waveletLevel;
+	//Gradient param
+	private boolean useGradientSpacing;
 	//ImageType
 	private HashMap<String, Boolean> imageType = new HashMap<String, Boolean>();
 	
@@ -177,7 +179,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				option=new OptionsRadiomics();
 				option.setLocationRelativeTo(null);
 				if (optionSet){
-					option.setExistingSettings(optionSet, fixedbin, resegmentPerRoi, binWidth, resegmentLimit, min, max, fixedBinPerRoi, normalize, normalizeScale, removeOutliners, resample, pixelSpacing, interpolator, padDistance, validateMask, minRoiDimension, minRoiSize, geometryTolerance, correctMask, isForce2DExtraction, isDistance, Dimension2D, matrixWeighting, distanceNeighbour, preCroping, voxelArrayShift, symetricalGLCM, alfa, logSigma, waveletString, waveletStart, waveletLevel, imageType);
+					option.setExistingSettings(optionSet, fixedbin, resegmentPerRoi, binWidth, resegmentLimit, min, max, fixedBinPerRoi, normalize, normalizeScale, removeOutliners, resample, pixelSpacing, interpolator, padDistance, validateMask, minRoiDimension, minRoiSize, geometryTolerance, correctMask, isForce2DExtraction, isDistance, Dimension2D, matrixWeighting, distanceNeighbour, preCroping, voxelArrayShift, symetricalGLCM, alfa, logSigma, waveletString, waveletStart, waveletLevel, useGradientSpacing, imageType);
 					option.setSelectedFeatures(featureSelection);
 				}
 				option.setModal(true);
@@ -352,12 +354,12 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 							JsonObject jsonTemp=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 							double minRoi=jsonTemp.get("original_firstorder_Minimum").getAsDouble();
 							double maxRoi=jsonTemp.get("original_firstorder_Maximum").getAsDouble();
-							settings=radiomics.writeYaml(discretize, ((maxRoi-minRoi)/fixedBinPerRoi),validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour,  true, minRoi, maxRoi, preCroping, logSigma, waveletStart, waveletLevel, waveletString, voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
+							settings=radiomics.writeYaml(discretize, ((maxRoi-minRoi)/fixedBinPerRoi),validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour,  true, minRoi, maxRoi, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing, voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
 						//Generate file settings if not defined in options
 						else if (!resegmentPerRoi && fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
-							settings=radiomics.writeYaml(discretize,binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
+							settings=radiomics.writeYaml(discretize,binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
 						//Use defined YAML file settings if defined in options
@@ -436,6 +438,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		jPrefer.put("waveletString", waveletString);
 		jPrefer.putInt("waveletStart", waveletStart);
 		jPrefer.putInt("waveletLevel", waveletLevel);
+		jPrefer.putBoolean("useGradientSpacing", useGradientSpacing );
 		jPrefer.putBoolean("typeOriginal", imageType.get("typeOriginal"));
 		jPrefer.putBoolean("typeLoG", imageType.get("typeLoG"));
 		jPrefer.putBoolean("typeWavelet", imageType.get("typeWavelet"));
@@ -443,6 +446,8 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		jPrefer.putBoolean("typeSquareRoot", imageType.get("typeSquareRoot"));
 		jPrefer.putBoolean("typeLogarithm", imageType.get("typeLogarithm"));
 		jPrefer.putBoolean("typeExponential", imageType.get("typeExponential"));
+		jPrefer.putBoolean("typeGradient", imageType.get("typeGradient"));
+		
 		String[] features=new String[featureSelection.size()];
 		featureSelection.keySet().toArray(features);
 		for (int i=0; i<features.length; i++){
@@ -490,6 +495,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			waveletString=jPrefer.get("waveletString", "");
 			waveletStart=jPrefer.getInt("waveletStart", 0);
 			waveletLevel=jPrefer.getInt("waveletLevel", 0);
+			useGradientSpacing=jPrefer.getBoolean("useGradientSpacing", true);
 			
 			//Poplation imageType
 			imageType.put("typeOriginal", jPrefer.getBoolean("typeOriginal", false));
@@ -499,9 +505,11 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 			imageType.put("typeSquareRoot", jPrefer.getBoolean("typeSquareRoot", false));
 			imageType.put("typeLogarithm", jPrefer.getBoolean("typeLogarithm", false));
 			imageType.put("typeExponential", jPrefer.getBoolean("typeExponential", false));
+			imageType.put("typeGradient", jPrefer.getBoolean("typeGradient", false));
 			
 			
 			//population feature list
+			featureSelection.put("Additional Info", jPrefer.getBoolean("Additional Info", true));
 			featureSelection.put("First Order", jPrefer.getBoolean("First Order", true));
 			featureSelection.put("Shape", jPrefer.getBoolean("Shape", true));
 			featureSelection.put("GLCM", jPrefer.getBoolean("GLCM", true));
@@ -558,6 +566,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		waveletStart=option.getWaveletLevel();
 		waveletLevel=option.getWaveletLevel();
 		waveletString=option.getWaveletString();
+		useGradientSpacing=option.getGradientUseSpacing();
 		//get ImageType
 		imageType=option.getImageType();
 		

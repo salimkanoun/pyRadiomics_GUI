@@ -211,7 +211,7 @@ public class Radiomics {
 	 * Write the config file in a temp file for pyradiomics processing for each request
 	 * @throws IOException 
 	 */
-	protected File writeYaml(boolean discretize, double binWidth, boolean validate,  int minimumROIDimensions, int minimumROISize, double geometryTolerance, boolean correctMask, int label, boolean normalize, double normalizeScale, double removeOutliers, boolean resample, double[] pixelSpacing, String interpolator, int padDistance, boolean force2D, int force2DDimensions, boolean distance, String distancesValues, boolean resegment, double min, double max, boolean preCrop, String sigma, int startLevelWavelet, int levelWavelet, String stringWavelet, int voxelArrayShift, boolean symmetricalGLCM, String weightingNorm, double gldmAlfa, HashMap<String, Boolean> imageType, HashMap<String,Boolean> features) throws IOException{
+	protected File writeYaml(boolean discretize, double binWidth, boolean validate,  int minimumROIDimensions, int minimumROISize, double geometryTolerance, boolean correctMask, int label, boolean normalize, double normalizeScale, double removeOutliers, boolean resample, double[] pixelSpacing, String interpolator, int padDistance, boolean force2D, int force2DDimensions, boolean distance, String distancesValues, boolean resegment, double min, double max, boolean preCrop, String sigma, int startLevelWavelet, int levelWavelet, String stringWavelet, boolean useGradientSpacing, int voxelArrayShift, boolean symmetricalGLCM, String weightingNorm, double gldmAlfa, HashMap<String, Boolean> imageType, HashMap<String,Boolean> features) throws IOException{
 	
 	//Prepare resegment string
 	String resegmentRange=null;
@@ -220,6 +220,7 @@ public class Radiomics {
 	//Prepare feature string
 	StringBuilder featuresString=new StringBuilder();
 	if (features.size()!=0){
+		if (features.get("Additional Info")== true) featuresString.append("  additionalInfo:\n");
 		if (features.get("First Order")== true) featuresString.append("  firstorder:\n");
 		if (features.get("Shape")== true) featuresString.append("  shape:\n");
 		if (features.get("GLCM")==true) featuresString.append("  glcm:\n");
@@ -265,7 +266,7 @@ public class Radiomics {
 	
 	if (resegment) settingsYaml +="  resegmentRange: "+resegmentRange+"\n";
 	
-	if (imageType.get("typeLoG")|| imageType.get("typeWavelet")||imageType.get("typeSquare")||imageType.get("typeSquareRoot")||imageType.get("typeLogarithm")||imageType.get("typeExponential") )settingsYaml +="  preCrop: "+String.valueOf(preCrop)+"\n";
+	if (imageType.get("typeLoG")|| imageType.get("typeWavelet")||imageType.get("typeSquare")||imageType.get("typeSquareRoot")||imageType.get("typeLogarithm")||imageType.get("typeExponential") ) settingsYaml +="  preCrop: "+String.valueOf(preCrop)+"\n";
 			
 	if (voxelArrayShift!=0) settingsYaml +="  voxelArrayShift: "+voxelArrayShift+"\n";
 	
@@ -285,6 +286,7 @@ public class Radiomics {
 	if (imageType.get("typeSquareRoot")) settingsYaml += "  SquareRoot: {}"+"\n";
 	if (imageType.get("typeLogarithm")) settingsYaml += "  Logarithm: {}"+"\n";
 	if (imageType.get("typeExponential")) settingsYaml += "  Exponential: {}"+"\n";
+	if (imageType.get("typeGradient")) settingsYaml += "  Gradient: {'gradientUseSpacing' : "+String.valueOf(useGradientSpacing)+"}"+"\n";
 	if (featuresString.length()!=0) settingsYaml+="featureClass:\n"+ featuresString+"\n";
 	
 	System.out.println(settingsYaml);
