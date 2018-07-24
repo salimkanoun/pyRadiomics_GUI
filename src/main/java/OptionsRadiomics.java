@@ -795,6 +795,7 @@ public class OptionsRadiomics extends JDialog {
 			panel.add(panel_Gradient_Options, BorderLayout.SOUTH);
 			
 			chckbxGradientSpacing = new JCheckBox("Gradient use spacing");
+			chckbxGradientSpacing.setEnabled(false);
 			panel_Gradient_Options.add(chckbxGradientSpacing);
 			}
 			

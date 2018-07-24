@@ -217,7 +217,6 @@ public class Radiomics {
 	//Prepare feature string
 	StringBuilder featuresString=new StringBuilder();
 	if (features.size()!=0){
-		if (features.get("Additional Info")== true) featuresString.append("  additionalInfo:\n");
 		if (features.get("First Order")== true) featuresString.append("  firstorder:\n");
 		if (features.get("Shape")== true) featuresString.append("  shape:\n");
 		if (features.get("GLCM")==true) featuresString.append("  glcm:\n");
@@ -227,8 +226,7 @@ public class Radiomics {
 	}
 	
  		
-	String settingsYaml= "\nsetting:\n"
-			+ "  enableCExtensions: true"+"\n";
+	String settingsYaml= "\nsetting:\n";
 	
 	if (validate) {
 		if (minimumROIDimensions!=0) settingsYaml+="  minimumROIDimensions: "+String.valueOf(minimumROIDimensions)+"\n";
@@ -236,6 +234,8 @@ public class Radiomics {
 		if (geometryTolerance!=0) settingsYaml+="  geometryTolerance: "+geometryTolerance+"\n";
 		settingsYaml+= "  correctMask: "+String.valueOf(correctMask)+"\n";
 	}
+	
+	if (features.get("Additional Info")== true) settingsYaml +="  additionalInfo:\n";
 			
 	settingsYaml += "  additionalInfo: true"+"\n"
 			+ "  label: "+ label+"\n";
