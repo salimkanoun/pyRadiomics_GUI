@@ -73,8 +73,8 @@ public class Radiomics {
 			 	}
 			 	
 		 }
-		 
-		 System.out.println(builder);
+		 process.destroy();
+		 JOptionPane.showMessageDialog(null, builder.toString(),"info", JOptionPane.INFORMATION_MESSAGE);
 		 System.out.println(resultsJson.toString());
 		 
 		 return resultsJson;
@@ -84,25 +84,19 @@ public class Radiomics {
 	 */
 	public static void testPyRadiomics()  {
 		
-		 ProcessBuilder pb = new ProcessBuilder("pyradiomics", "--version");
-		 pb.environment();
-	        
-		//ProcessBuilder pb = new ProcessBuilder("cmd.exe", "pyradiomics" ,"--version");
-		
-		
+		ProcessBuilder pb = new ProcessBuilder("pyradiomics", "--version");
+		pb.environment();
 		pb.redirectErrorStream(true); 
 		BufferedReader reader = null;
-        Process process;
+        Process process = null;
+        
 		try {
 			process = pb.start();
 			InputStream stdout = process.getInputStream();
 			reader = new BufferedReader (new InputStreamReader(stdout));
 		} catch (IOException e) {
 			e.printStackTrace(); 
-			JOptionPane.showMessageDialog(null,
-				    "pyRadiomics is not found, install it on your system. \nVisit pyRadiomics.io or petctviewer.org",
-				    "Not Found",
-				    JOptionPane.ERROR_MESSAGE);
+			
 		}  
   
 		StringBuilder builder = new StringBuilder();
@@ -116,8 +110,19 @@ public class Radiomics {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		 JOptionPane.showMessageDialog(null,
+		 
+		process.destroy();
+		
+		if (builder.toString().startsWith("pyradiomics")) {
+			JOptionPane.showMessageDialog(null,
 				    "pyRadiomics OK "+builder.toString());
+		} else {
+			JOptionPane.showMessageDialog(null,
+				    "pyRadiomics is not found, install it on your system. \n Visit pyRadiomics.io or petctviewer.org \n error"+ builder.toString(),
+				    "Not Found",
+				    JOptionPane.ERROR_MESSAGE);
+		}
+		
 	}
 	
 	/**
@@ -188,8 +193,6 @@ public class Radiomics {
 	 * @param path
 	 */
 	protected void writeCSV(StringBuilder csv, String path) {
-		System.out.println(csv);
-		
 		File f = new File(path);
 
 		// On ecrit les CSV

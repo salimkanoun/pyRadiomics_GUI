@@ -356,7 +356,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 							JOptionPane.showMessageDialog(null,"Missing Image or Mask File");
 						}
 					//build CSV
-					System.out.println("ici");
 					if (json.size()!=0) {
 						if (i==0) radiomics.jsonToCsv(csv, json, label.get(i), true);
 						else radiomics.jsonToCsv(csv, json, label.get(i), false);
