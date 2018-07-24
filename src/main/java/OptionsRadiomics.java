@@ -61,7 +61,7 @@ public class OptionsRadiomics extends JDialog {
 	textField_GeometryTolerance, 
 	txt_setDistances,
 	txt_setAlfa,
-	txtGaussianSigma,
+	txtLoGSigma,
 	txtWavelet ;
 	
 	protected JCheckBox 
@@ -100,9 +100,6 @@ public class OptionsRadiomics extends JDialog {
 	
 	protected List<JCheckBox> imageType = new ArrayList<JCheckBox>();
 	protected JComboBox<String> comboBox_Interpolator, comboBox_Weighting;
-	
-	private Double fixedBinWidth, min, max;
-	private int numberOfBin;
 	
 	private File settingsFile=null;
 	protected boolean ok=false;
@@ -694,8 +691,8 @@ public class OptionsRadiomics extends JDialog {
 			JCheckBox chckbxLog = new JCheckBox("LoG");
 			chckbxLog.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
-				if (chckbxLog.isSelected()) txtGaussianSigma.setEnabled(true);
-				else if (!chckbxLog.isSelected()) txtGaussianSigma.setEnabled(false);
+				if (chckbxLog.isSelected()) txtLoGSigma.setEnabled(true);
+				else if (!chckbxLog.isSelected()) txtLoGSigma.setEnabled(false);
 				}
 			});
 			panel_2.add(chckbxLog);
@@ -788,11 +785,11 @@ public class OptionsRadiomics extends JDialog {
 			JLabel lblSigma = new JLabel("Sigma");
 			panel_Log_Options.add(lblSigma);
 			
-			txtGaussianSigma = new JTextField();
-			txtGaussianSigma.setToolTipText("List of floats or integers, must be greater than 0");
-			txtGaussianSigma.setEnabled(false);
-			panel_Log_Options.add(txtGaussianSigma);
-			txtGaussianSigma.setColumns(10);
+			txtLoGSigma = new JTextField();
+			txtLoGSigma.setToolTipText("List of floats or integers, must be greater than 0");
+			txtLoGSigma.setEnabled(false);
+			panel_Log_Options.add(txtLoGSigma);
+			txtLoGSigma.setColumns(10);
 			
 			JPanel panel_Gradient_Options = new JPanel();
 			panel.add(panel_Gradient_Options, BorderLayout.SOUTH);
@@ -922,10 +919,8 @@ public class OptionsRadiomics extends JDialog {
 		}
 	}
 	
-	
 	public Double getfixedBinWidth(){
-		fixedBinWidth=Double.parseDouble(txtFixedBinWidth.getText());
-		return fixedBinWidth;
+		return Double.parseDouble(txtFixedBinWidth.getText());
 	}
 	
 	public void setfixedBinWidth(double binWidth) {
@@ -933,29 +928,17 @@ public class OptionsRadiomics extends JDialog {
 	}
 	
 	public double getResegmentMin(){
-		min=Double.parseDouble(txtResegmentationMin.getText());
-		return min;
+		 return Double.parseDouble(txtResegmentationMin.getText());
 	}
 	
 	public double getResegmentMax(){
-		max=Double.parseDouble(txtResegmentationMax.getText());
-		return max;
+		return Double.parseDouble(txtResegmentationMax.getText());
 	}
 	
 	public void setResegment(double min, double max) {
 		txtResegmentationMin.setText(String.valueOf(min));
 		txtResegmentationMax.setText(String.valueOf(max));
 	}
-	
-	public int getNumberOfBin(){
-		numberOfBin=(int) spinnerBinFixed.getValue();
-		return numberOfBin;
-	}
-	
-	public void setNumberOfBin(int numberBin){
-		spinnerBinFixed.setValue(numberBin);
-	}
-	
 	
 	public double getNormalizeScale() {
 		return Double.parseDouble(txtNormalizeScale.getText());
@@ -995,18 +978,21 @@ public class OptionsRadiomics extends JDialog {
 		return Double.parseDouble(textField_GeometryTolerance.getText());
 	}
 	
-	
 	public String getWeighting() {
 		return (String) comboBox_Weighting.getSelectedItem();
 	}
 	
-	public String getDistances() {
-		return txt_setDistances.getText();
+	public void setWeighting(String weighting) {
+		comboBox_Weighting.setSelectedItem(weighting); 
 	}
 	
 	
 	public double getAlfaGLDM() {
 		return Double.parseDouble(txt_setAlfa.getText());
+	}
+	
+	public void setAlfaGLDM(double alpha) {
+		txt_setAlfa.setText(String.valueOf(alpha));
 	}
 	
 	public File getSettingFile(){
@@ -1039,77 +1025,6 @@ public class OptionsRadiomics extends JDialog {
 		return  imageType;
 	}
 	
-	public String getLogSigma() {
-		return txtGaussianSigma.getText();
-	}
-	
-	public String getWaveletString() {
-		return txtWavelet.getText();
-	}
-	// Set settings before opening settings GUI
-	// SK A FAIRE DISPARAITRE VIA LA METHODE SET AVANT LE SHOW DANS LA FRAME PARENTE
-	public void setExistingSettings(boolean optionSet, boolean fixedBin, boolean resegmentPerRoi, double binWidth, boolean resegmentLimit, double min, double max, int fixedBinPerRoi,
-			boolean normalize, double normalizeScale, double removeOutliners, boolean resample, double[] pixelSpacing, String interpolator, int padDistance,
-			boolean validateMask, int minRoiDimension, int minRoiSize, double geometryTolerance, boolean correctMask,
-			boolean isForce2DExtraction, boolean isDistance, int Dimension2D, String matrixWeighting, String distanceNeighbour, boolean preCroping,
-			int voxelArrayShift, boolean symetricalGLCM, double alfa, String logSigma, String waveletString, int waveletStart, int waveletLevel, boolean gradientUseSpacing, HashMap<String, Boolean> imageType
-			){
-		if (optionSet) {
-			chckbxFixedBinWidth.setSelected(fixedBin);
-			txtFixedBinWidth.setText(String.valueOf(binWidth));
-			chckbxResegmentation.setSelected(resegmentLimit);
-			txtResegmentationMin.setText(String.valueOf(min)); 
-			txtResegmentationMax.setText(String.valueOf(max));
-			chckbxEnableFixedBin.setSelected(!fixedBin);
-			spinnerBinFixed.setValue(fixedBinPerRoi);
-			
-			checkBoxNormalize.setSelected(normalize);
-			txtNormalizeScale.setText(String.valueOf(normalizeScale));
-			txtRemoveOutliners.setText(String.valueOf(removeOutliners));
-			
-			chckbxResampleImage.setSelected(resample);
-			txtXPixelSpacing.setText(String.valueOf(pixelSpacing[0]));
-			txtYPixelSpacing.setText(String.valueOf(pixelSpacing[1]));
-			txtZPixelSpacing.setText(String.valueOf(pixelSpacing[2]));
-			comboBox_Interpolator.setSelectedItem(interpolator);
-			spinner_padDistance.setValue(padDistance);
-			
-			chckbxValidateMask.setSelected(validateMask);
-			spinner_minRoiDimension.setValue(minRoiDimension);
-			spinner_minRoiSize.setValue(minRoiSize);
-			textField_GeometryTolerance.setText(String.valueOf(geometryTolerance));
-			chckbxCorrectMask.setSelected(correctMask);
-			
-			chckbxForce2DExtraction.setSelected(isForce2DExtraction);
-			spinner_2D_Dimension.setValue(Dimension2D);
-			comboBox_Weighting.setSelectedItem(matrixWeighting);
-			chckbxUseDistancesToNeighbour.setSelected(isDistance);
-			txt_setDistances.setText(distanceNeighbour);
-			chckbxPrecropping.setSelected(preCroping);
-			
-			spinner_VoxelArrayShift.setValue(voxelArrayShift);
-			chckbxSymetricalGlcm.setSelected(symetricalGLCM);
-			txt_setAlfa.setText(String.valueOf(alfa));
-			
-			txtGaussianSigma.setText(logSigma);
-			txtWavelet.setText(waveletString);
-			spinner_startLevelWavelet.setValue(waveletStart);
-			spinner_Wavelet_Level.setValue(waveletLevel);
-			
-			chckbxGradientSpacing.setEnabled(gradientUseSpacing);
-			
-			if (imageType.get("typeOriginal")) this.imageType.get(0).setSelected(true);
-			if (imageType.get("typeLoG")) this.imageType.get(1).setSelected(true);
-			if (imageType.get("typeWavelet")) this.imageType.get(2).setSelected(true);
-			if (imageType.get("typeSquare")) this.imageType.get(3).setSelected(true);
-			if (imageType.get("typeSquareRoot")) this.imageType.get(4).setSelected(true);
-			if (imageType.get("typeLogarithm")) this.imageType.get(5).setSelected(true);
-			if (imageType.get("typeExponential")) this.imageType.get(6).setSelected(true);
-			if (imageType.get("typeGradient")) this.imageType.get(7).setSelected(true);
-			
-		}
-	}
-	
 	public void setSelectedFeatures(HashMap<String, Boolean> features){
 		if (!features.get("Additional Info")) chckbxAdditionalInfo.setSelected(false);
 		if (!features.get("First Order")) chckbxFirstOrder.setSelected(false);
@@ -1120,6 +1035,17 @@ public class OptionsRadiomics extends JDialog {
 		if (!features.get("NGTDM")) chckbxNgtdm.setSelected(false);
 		if (!features.get("GLDM")) chckbxGtdm.setSelected(false);
 		
+	}
+	
+	public void setImageType(HashMap<String, Boolean> imageType) {
+		if (imageType.get("typeOriginal")) this.imageType.get(0).setSelected(true);
+		if (imageType.get("typeLoG")) this.imageType.get(1).setSelected(true);
+		if (imageType.get("typeWavelet")) this.imageType.get(2).setSelected(true);
+		if (imageType.get("typeSquare")) this.imageType.get(3).setSelected(true);
+		if (imageType.get("typeSquareRoot")) this.imageType.get(4).setSelected(true);
+		if (imageType.get("typeLogarithm")) this.imageType.get(5).setSelected(true);
+		if (imageType.get("typeExponential")) this.imageType.get(6).setSelected(true);
+		if (imageType.get("typeGradient")) this.imageType.get(7).setSelected(true);
 	}
 
 }

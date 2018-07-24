@@ -106,31 +106,11 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	private File fileSettingsOption;
 	private HashMap<String, Boolean> featureSelection=new HashMap<String, Boolean>();
 	
-	OptionsRadiomics option;
+	private OptionsRadiomics option;
 	
 	//Main Frame buttons
-	JButton btnImagejStack, btnSetImage, btnSetMask, btnImagejMaskStack ;
+	private JButton btnImagejStack, btnSetImage, btnSetMask, btnImagejMaskStack ;
 	
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Radiomics_Frame frame = new Radiomics_Frame();
-					//Disable ImageJ button for Stack reading in case of standalone run
-					frame.btnImagejStack.setVisible(false);
-					frame.btnImagejMaskStack.setVisible(false);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	/**
 	 * Create the frame.
 	 */
@@ -179,8 +159,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 				option=new OptionsRadiomics();
 				option.setLocationRelativeTo(null);
 				if (optionSet){
-					option.setExistingSettings(optionSet, fixedbin, useFixedBinPerRoi, binWidth, resegmentLimit, min, max, fixedBinPerRoi, normalize, normalizeScale, removeOutliners, resample, pixelSpacing, interpolator, padDistance, validateMask, minRoiDimension, minRoiSize, geometryTolerance, correctMask, isForce2DExtraction, isDistance, Dimension2D, matrixWeighting, distanceNeighbour, preCroping, voxelArrayShift, symetricalGLCM, alfa, logSigma, waveletString, waveletStart, waveletLevel, useGradientSpacing, imageType);
-					option.setSelectedFeatures(featureSelection);
+					setOptions();
 				}
 				option.setModal(true);
 				option.setVisible(true);
@@ -533,7 +512,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		min=option.getResegmentMin();
 		max=option.getResegmentMax();
 		useFixedBinPerRoi=option.chckbxEnableFixedBin.isSelected();
-		fixedBinPerRoi=option.getNumberOfBin();
+		fixedBinPerRoi=(int) option.spinnerBinFixed.getValue();
 		//Get the Normalize settings
 		normalize=option.checkBoxNormalize.isSelected();
 		normalizeScale=option.getNormalizeScale();
@@ -554,7 +533,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		Dimension2D=(int) option.spinner_2D_Dimension.getValue();
 		matrixWeighting=option.getWeighting();
 		isDistance=option.chckbxUseDistancesToNeighbour.isSelected();
-		distanceNeighbour=option.getDistances();
+		distanceNeighbour=option.txt_setDistances.getText();
 		preCroping=option.chckbxPrecropping.isSelected();
 		//Get Specific Settings 
 		voxelArrayShift=(int) option.spinner_VoxelArrayShift.getValue();
@@ -565,10 +544,10 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		//Get the feature Selection
 		featureSelection=option.getSelectedFeatures();
 		//Get Log And Wavelet Parameters
-		logSigma=option.getLogSigma();
+		logSigma=option.txtLoGSigma.getText();
 		waveletStart=(int) option.spinner_startLevelWavelet.getValue();
 		waveletLevel=(int) option.spinner_Wavelet_Level.getValue();
-		waveletString=option.getWaveletString();
+		waveletString=option.txtWavelet.getText();
 		useGradientSpacing=option.chckbxGradientSpacing.isSelected();
 		//get ImageType
 		imageType=option.getImageType();
@@ -579,7 +558,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 	}
 	
-	//SK A FAIRE SETTEUR D OPTION EN MEMOIRE DANS LA GUI
 	private void setOptions() {
 		option.chckbxDiscretize.setSelected(discretize);
 		option.chckbxEnableFixedBin.setSelected(fixedbin);
@@ -587,7 +565,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		option.chckbxResegmentation.setSelected(resegmentLimit);
 		option.setResegment(min, max);
 		option.chckbxEnableFixedBin.setSelected(useFixedBinPerRoi);
-		option.setNumberOfBin(fixedBinPerRoi);
+		option.spinnerBinFixed.setValue(fixedBinPerRoi);
 		option.checkBoxNormalize.setSelected(normalize);
 		option.setNormalizeScale(normalizeScale);
 		option.setRemoveOutliners(removeOutliners);
@@ -596,37 +574,26 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		option.setInterpolator(interpolator);
 		option.spinner_padDistance.setValue((int) padDistance);
 		option.chckbxValidateMask.setSelected(validateMask);
-		
-		//minRoiDimension=(int) option.spinner_minRoiDimension.getValue();
-		//minRoiSize=(int) option.spinner_minRoiSize.getValue();
-		//geometryTolerance=option.getGeometryTolerance();
+		option.spinner_minRoiDimension.setValue(minRoiDimension); 
+		option.spinner_minRoiSize.setValue(minRoiSize);
+		option.textField_GeometryTolerance.setText(String.valueOf(geometryTolerance));
 		option.chckbxCorrectMask.setSelected(correctMask);
 		option.chckbxForce2DExtraction.setSelected(isForce2DExtraction);
-		//Dimension2D=(int) option.spinner_2D_Dimension.getValue();
-		//matrixWeighting=option.getWeighting();
+		option.spinner_2D_Dimension.setValue(Dimension2D);
+		option.setWeighting(matrixWeighting);
 		option.chckbxUseDistancesToNeighbour.setSelected(isDistance);
-		//distanceNeighbour=option.getDistances();
-	
+		option.txt_setDistances.setText(distanceNeighbour);
 		option.chckbxPrecropping.setSelected(preCroping);
-		
-		//Get Specific Settings 
-		//voxelArrayShift=(int) option.spinner_VoxelArrayShift.getValue();
-		
+		option.spinner_VoxelArrayShift.setValue(voxelArrayShift);
 		option.chckbxSymetricalGlcm.setSelected(symetricalGLCM);
-		
-		//alfa=option.getAlfaGLDM();
-		
-		//Get the feature Selection
-		//featureSelection=option.getSelectedFeatures();
-		//Get Log And Wavelet Parameters
-		//logSigma=option.getLogSigma();
-		//waveletStart=(int) option.spinner_startLevelWavelet.getValue();
-		//waveletLevel=(int) option.spinner_Wavelet_Level.getValue();
-		//waveletString=option.getWaveletString();
-		
+		option.setAlfaGLDM(alfa);
+		option.setSelectedFeatures(featureSelection);
+		option.txtLoGSigma.setText(logSigma);
+		option.spinner_startLevelWavelet.setValue(waveletStart);
+		option.spinner_Wavelet_Level.setValue(waveletLevel);
+		option.txtWavelet.setText(waveletString);
 		option.chckbxGradientSpacing.setSelected(useGradientSpacing);
-		//get ImageType
-		//imageType=option.getImageType();
+		option.setImageType(imageType);
 		
 		
 	}
@@ -661,7 +628,9 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 	}
 
-	//ImageJ run Methode
+	/**
+	 * ImageJ Run methods
+	 */
 	@Override
 	public void run(String arg0) {
 		String argumentString = Macro.getOptions();
@@ -680,5 +649,25 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		//Example of running Macro
 		//run("pyRadiomics", "/home/salim/Nifti/Repertoire Espace/_float.nii;/home/salim/Nifti/Repertoire Espace/_mask.nii");
 	}
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Radiomics_Frame frame = new Radiomics_Frame();
+					//Disable ImageJ button for Stack reading in case of standalone run
+					frame.btnImagejStack.setVisible(false);
+					frame.btnImagejMaskStack.setVisible(false);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 
 }
