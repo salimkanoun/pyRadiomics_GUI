@@ -103,6 +103,8 @@ public class OptionsRadiomics extends JDialog {
 	
 	private File settingsFile=null;
 	protected boolean ok=false;
+	
+	private OptionsRadiomics gui; 
 
 	/**
 	 * Launch the application.
@@ -142,9 +144,9 @@ public class OptionsRadiomics extends JDialog {
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		buttonPane.add(panel_5);
 		
-		JButton btnTestPyradiomics = new JButton("Test pyRadiomics");
+		JButton btnTestPyradiomics = new JButton("pyRadiomics");
 		panel_5.add(btnTestPyradiomics);
-		
+
 		JButton btnSetSettingsFile = new JButton("Set Settings File");
 		panel_5.add(btnSetSettingsFile);
 		
@@ -186,11 +188,17 @@ public class OptionsRadiomics extends JDialog {
 				}
 			}
 		});
+		
 		btnTestPyradiomics.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Radiomics.testPyRadiomics();
+				Test_PyRadiomics testGui=new Test_PyRadiomics();
+				testGui.setModal(true);
+				testGui.pack();
+				testGui.setLocationRelativeTo(gui);
+				testGui.setVisible(true);
 			}
 		});
+		
 
 		JPanel Settings_Panel = new JPanel();
 		getContentPane().add(Settings_Panel, BorderLayout.CENTER);
@@ -857,6 +865,7 @@ public class OptionsRadiomics extends JDialog {
 			}
 			this.setSize(this.getPreferredSize());
 			}
+			this.gui=this;
 		
 		
 	}
