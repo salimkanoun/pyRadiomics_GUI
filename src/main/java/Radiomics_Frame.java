@@ -63,7 +63,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	/////Option Variables ////
 	private boolean optionSet=false;
 	//Discretization
-	private boolean discretize;
 	private boolean fixedbin;
 	private boolean useFixedBinPerRoi;
 	private Double binWidth;
@@ -331,7 +330,7 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 						
 						//Generate file settings if not defined in options
 						if ( fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
-							settings=radiomics.writeYaml(discretize, useFixedBinPerRoi, fixedBinPerRoi, binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
+							settings=radiomics.writeYaml(useFixedBinPerRoi, fixedBinPerRoi, binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
 						
@@ -377,7 +376,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		//Settings have been set once
 		jPrefer.putBoolean("optionSet", true);
 		//Add settings
-		jPrefer.putBoolean("discretize", discretize);
 		jPrefer.putBoolean("fixedbin", fixedbin);
 		jPrefer.putBoolean("resegmentPerRoi", useFixedBinPerRoi);
 		jPrefer.putDouble("binWidth", binWidth);
@@ -435,7 +433,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 		optionSet=jPrefer.getBoolean("optionSet", false);
 		if (optionSet) {
-			discretize=jPrefer.getBoolean("discretize", false);
 			fixedbin=jPrefer.getBoolean("fixedbin", false);
 			useFixedBinPerRoi=jPrefer.getBoolean("resegmentPerRoi", false);
 			binWidth=jPrefer.getDouble("binWidth", 0);
@@ -500,7 +497,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	 * Load option data from panel option in this main class
 	 */
 	private void getOptions() {
-		discretize=option.chckbxDiscretize.isSelected();
 		fixedbin=option.chckbxEnableFixedBin.isSelected();
 		binWidth=option.getfixedBinWidth();
 		resegmentLimit=option.chckbxResegmentation.isSelected();
@@ -554,7 +550,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	}
 	
 	private void setOptions() {
-		option.chckbxDiscretize.setSelected(discretize);
 		option.chckbxEnableFixedBin.setSelected(fixedbin);
 		option.setfixedBinWidth(binWidth);
 		option.chckbxResegmentation.setSelected(resegmentLimit);

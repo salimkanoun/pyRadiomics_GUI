@@ -84,7 +84,6 @@ public class OptionsRadiomics extends JDialog {
 	chckbxPrecropping,
 	chckbxSymetricalGlcm,
 	chckbxUseDistancesToNeighbour,
-	chckbxDiscretize,
 	chckbxGradient,
 	chckbxGradientSpacing;
 	
@@ -280,15 +279,6 @@ public class OptionsRadiomics extends JDialog {
 			spinnerBinFixed.setModel(new SpinnerNumberModel(0, null, 1000, 1));
 			spinnerBinFixed.setEnabled(false);
 			panel_1.add(spinnerBinFixed);
-			
-			chckbxDiscretize = new JCheckBox("Discretize");
-			chckbxDiscretize.setSelected(true);
-			chckbxDiscretize.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent arg0) {
-					enableDiscretize(chckbxDiscretize.isSelected());
-				}
-			});
-			Discretization_Panel.add(chckbxDiscretize, BorderLayout.WEST);
 					
 			chckbxEnableFixedBin.addChangeListener(new ChangeListener() {
 				public void stateChanged (ChangeEvent e) {
@@ -910,22 +900,6 @@ public class OptionsRadiomics extends JDialog {
 			spinner_minRoiDimension.setEnabled(false);
 			spinner_minRoiSize.setEnabled(false);
 			chckbxCorrectMask.setEnabled(false);
-		}
-	}
-	
-	private void enableDiscretize(boolean discretize) {
-		if (discretize) {
-			chckbxFixedBinWidth.setEnabled(true);
-			chckbxResegmentation.setEnabled(true);
-			chckbxEnableFixedBin.setEnabled(true);
-			txtFixedBinWidth.setEnabled(true);
-			
-		}
-		else {
-			chckbxFixedBinWidth.setEnabled(false);
-			chckbxResegmentation.setEnabled(false);
-			chckbxEnableFixedBin.setEnabled(false);
-			
 		}
 	}
 	

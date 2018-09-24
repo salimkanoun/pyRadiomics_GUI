@@ -96,7 +96,10 @@ public class Radiomics {
 			InputStream stdout = process.getInputStream();
 			reader = new BufferedReader (new InputStreamReader(stdout));
 		} catch (IOException e) {
-			e.printStackTrace(); 
+			JOptionPane.showMessageDialog(null,
+				    "pyRadiomics is not found, install it on your system. \n Visit pyRadiomics.io or petctviewer.org \n error"+e,
+				    "Not Found",
+				    JOptionPane.ERROR_MESSAGE);
 			
 		}  
   
@@ -169,7 +172,7 @@ public class Radiomics {
 	 * Install pyRadiomics
 	 */
 	public static void installPyRadiomics()  {
-		ProcessBuilder pb = new ProcessBuilder("python", "-m", "pip", "install", "pyradiomics");
+		ProcessBuilder pb = new ProcessBuilder("python", "-m", "pip", "install", "pyradiomics", "--user");
 		pb.environment();
 		pb.redirectErrorStream(true); 
 		BufferedReader reader = null;
@@ -292,7 +295,7 @@ public class Radiomics {
 	 * Write the config file in a temp file for pyradiomics processing for each request
 	 * @throws IOException 
 	 */
-	protected File writeYaml(boolean discretize, boolean useFixedBinPerRoi, int binCount,  double binWidth, boolean validate,  int minimumROIDimensions, int minimumROISize, double geometryTolerance, boolean correctMask, int label, boolean normalize, double normalizeScale, double removeOutliers, boolean resample, double[] pixelSpacing, String interpolator, int padDistance, boolean force2D, int force2DDimensions, boolean distance, String distancesValues, boolean resegment, double min, double max, boolean preCrop, String sigma, int startLevelWavelet, int levelWavelet, String stringWavelet, boolean useGradientSpacing, int voxelArrayShift, boolean symmetricalGLCM, String weightingNorm, double gldmAlfa, HashMap<String, Boolean> imageType, HashMap<String,Boolean> features) throws IOException{
+	protected File writeYaml(boolean useFixedBinPerRoi, int binCount,  double binWidth, boolean validate,  int minimumROIDimensions, int minimumROISize, double geometryTolerance, boolean correctMask, int label, boolean normalize, double normalizeScale, double removeOutliers, boolean resample, double[] pixelSpacing, String interpolator, int padDistance, boolean force2D, int force2DDimensions, boolean distance, String distancesValues, boolean resegment, double min, double max, boolean preCrop, String sigma, int startLevelWavelet, int levelWavelet, String stringWavelet, boolean useGradientSpacing, int voxelArrayShift, boolean symmetricalGLCM, String weightingNorm, double gldmAlfa, HashMap<String, Boolean> imageType, HashMap<String,Boolean> features) throws IOException{
 	
 	//Prepare resegment string
 	String resegmentRange=null;
@@ -324,14 +327,13 @@ public class Radiomics {
 	settingsYaml +="  label: "+ label+"\n";
 	
 	
-	if (discretize) {
-		if(useFixedBinPerRoi) {
-			settingsYaml += "  binCount: "+binCount+"\n";
-		}else {
-			settingsYaml += "  binWidth: "+binWidth+"\n";
-		}
-		
+	
+	if(useFixedBinPerRoi) {
+		settingsYaml += "  binCount: "+binCount+"\n";
+	}else {
+		settingsYaml += "  binWidth: "+binWidth+"\n";
 	}
+
 	
 	if (normalize) {
 		settingsYaml+= "  normalize: true"+"\n";
