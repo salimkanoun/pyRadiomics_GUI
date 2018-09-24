@@ -11,6 +11,10 @@ import java.awt.GridLayout;
 
 public class Test_PyRadiomics extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 
 	/**
