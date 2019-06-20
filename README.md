@@ -1,2 +1,1 @@
-# pyRadiomics_GUI
-JAVA GUI for pyRadiomics
+@ Code have moved to https://github.com/salimkanoun/Pet_CT_Tools
