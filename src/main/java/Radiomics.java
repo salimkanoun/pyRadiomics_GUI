@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -427,7 +428,7 @@ public class Radiomics {
 	 */
 	private File writeYaml(String settingsYaml) throws IOException{
 		PrintWriter pw = null;
-		File temp = File.createTempFile("settings", ".yaml");
+		File temp = Files.createTempFile("settings", ".yaml").toFile();
 		temp.deleteOnExit();
 		try {
 			pw = new PrintWriter(temp);
